@@ -240,7 +240,9 @@ body {
   font-family: inherit; font-size: 12.5px; font-weight: 600; color: var(--soil-dark); text-align: left;
   transition: background 0.15s ease;
 }
-.admin-level-summary:hover { background: color-mix(in srgb, var(--admin-accent) 6%, transparent); }
+@media (hover: hover) and (pointer: fine) {
+  .admin-level-summary:hover { background: color-mix(in srgb, var(--admin-accent) 6%, transparent); }
+}
 .admin-level-summary.expanded { background: color-mix(in srgb, var(--admin-accent) 10%, transparent); }
 .admin-level-thumb { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; flex-shrink: 0; background: var(--paper); box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
 .admin-level-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -405,7 +407,9 @@ h1 { font-size: 21px; margin: 0 0 5px; font-weight: 800; letter-spacing: -0.01em
   font-size: 20px; font-weight: 700; line-height: 1; display: flex; align-items: center; justify-content: center;
   cursor: pointer; box-shadow: var(--shadow); transition: border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
 }
-.quiz-back-btn:hover { border-color: var(--leaf); color: var(--leaf); }
+@media (hover: hover) and (pointer: fine) {
+  .quiz-back-btn:hover { border-color: var(--leaf); color: var(--leaf); }
+}
 .quiz-back-btn:focus-visible { outline: 2px solid var(--leaf); outline-offset: 2px; }
 .quiz-stage-wrap {
   position: relative; overflow: hidden;
@@ -438,7 +442,9 @@ h1 { font-size: 21px; margin: 0 0 5px; font-weight: 800; letter-spacing: -0.01em
 .choice-btn.correct { border-color: var(--ok); background: color-mix(in srgb, var(--ok) 18%, var(--card)); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok) 18%, transparent); }
 .choice-btn.wrong { border-color: var(--bad); background: color-mix(in srgb, var(--bad) 14%, var(--card)); }
 .choice-btn:disabled { cursor: default; }
-.choice-btn:not(:disabled):hover { border-color: var(--leaf); transform: translateY(-1px); box-shadow: 0 3px 6px rgba(74,52,35,0.1); }
+@media (hover: hover) and (pointer: fine) {
+  .choice-btn:not(:disabled):hover { border-color: var(--leaf); transform: translateY(-1px); box-shadow: 0 3px 6px rgba(74,52,35,0.1); }
+}
 .choice-btn:not(:disabled):active { transform: translateY(0); }
 .choice-btn:focus-visible { outline: 2px solid var(--leaf); outline-offset: 2px; }
 
@@ -453,7 +459,9 @@ h1 { font-size: 21px; margin: 0 0 5px; font-weight: 800; letter-spacing: -0.01em
 .crop-choice.correct { border-color: var(--ok); background: color-mix(in srgb, var(--ok) 16%, var(--card)); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok) 18%, transparent); }
 .crop-choice.wrong { border-color: var(--bad); background: color-mix(in srgb, var(--bad) 12%, var(--card)); }
 .crop-choice:disabled { cursor: default; }
-.crop-choice:not(:disabled):hover { border-color: var(--leaf); transform: translateY(-2px); box-shadow: 0 4px 8px rgba(74,52,35,0.12); }
+@media (hover: hover) and (pointer: fine) {
+  .crop-choice:not(:disabled):hover { border-color: var(--leaf); transform: translateY(-2px); box-shadow: 0 4px 8px rgba(74,52,35,0.12); }
+}
 .crop-choice:focus-visible { outline: 2px solid var(--leaf); outline-offset: 2px; }
 
 .fert-choice-btn {
@@ -464,7 +472,9 @@ h1 { font-size: 21px; margin: 0 0 5px; font-weight: 800; letter-spacing: -0.01em
 .fert-choice-btn.correct { border-color: var(--ok); background: color-mix(in srgb, var(--ok) 18%, var(--card)); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok) 18%, transparent); }
 .fert-choice-btn.wrong { border-color: var(--bad); background: color-mix(in srgb, var(--bad) 14%, var(--card)); }
 .fert-choice-btn:disabled { cursor: default; }
-.fert-choice-btn:not(:disabled):hover { border-color: var(--leaf); transform: translateX(2px); }
+@media (hover: hover) and (pointer: fine) {
+  .fert-choice-btn:not(:disabled):hover { border-color: var(--leaf); transform: translateX(2px); }
+}
 .fert-choice-btn:focus-visible { outline: 2px solid var(--leaf); outline-offset: 2px; }
 
 .choice-btn.correct, .crop-choice.correct, .fert-choice-btn.correct { animation: choicePop 0.35s ease; }
@@ -653,7 +663,9 @@ h1 { font-size: 21px; margin: 0 0 5px; font-weight: 800; letter-spacing: -0.01em
   box-shadow: 0 4px 0 var(--leaf-dark), 0 6px 12px rgba(74,52,35,0.18);
   transition: transform 0.1s ease, box-shadow 0.1s ease, filter 0.15s ease;
 }
-.btn:not(:disabled):hover { filter: brightness(1.04); }
+@media (hover: hover) and (pointer: fine) {
+  .btn:not(:disabled):hover { filter: brightness(1.04); }
+}
 .btn:not(:disabled):active {
   transform: translateY(3px); box-shadow: 0 1px 0 var(--leaf-dark), 0 2px 6px rgba(74,52,35,0.16);
 }
