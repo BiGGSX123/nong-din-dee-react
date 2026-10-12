@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Player {
+  id          String          @id @default(cuid())
+  lineUserId  String          @unique
+  displayName String
+  pictureUrl  String?
+  points      Int             @default(0)
+  // "player" | "admin" — replaces the old shared ADMIN_TOKEN gate; admin API
+  // routes now check this on the logged-in session instead of a bearer secret
+  role        String          @default("player")
+  // AdminLevel.index of the player's chosen home province — that level becomes
+  // their personal starting point (see server/src/levelOrder.js). Loose
+  // reference (no FK) since AdminLevel rows can be added/removed by admins.
+  homeLevelIndex Int?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  progress    LevelProgress[]
+}
+
+model LevelProgress {
+  id           String   @id @default(cuid())
+  playerId     String
+  player       Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  levelIndex   Int
+  completed    Boolean  @default(false)
+  locked       Boolean  @default(true)
+  stars        Int      @default(0)
+  // this level's current point value — Player.points is kept as the sum of
+  // every level's `points`, so replaying a level replaces its contribution
+  // instead of adding a new one on top (see server/src/routes/progress.js)
+  points       Int      @default(0)
+  pickedCropId String?
+  updatedAt    DateTime @updatedAt
+
+  @@unique([playerId, levelIndex])
+}
+
+// admin-editable game content — replaces the old localStorage-backed config
+model AdminLevel {
+  index          Int    @id
+  province       String
+  soilId         String
+  careCorrectIdx Int
+  cropChoices    Json
+  cropCorrectId  String
+  fertOrder      Json
+  fertCorrectIdx Int
+}
+
+model AdminCareMethod {
+  index Int    @id
+  text  String
+}
+
+model AdminFertilizer {
+  index Int    @id
+  label String
+  sub   String
+}
