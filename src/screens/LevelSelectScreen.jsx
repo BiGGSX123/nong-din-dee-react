@@ -95,7 +95,7 @@ export default function LevelSelectScreen({ levels, levelStatus, playOrder, hasH
   return (
     <>
       <h1>แผนที่ 77 จังหวัด</h1>
-      <p className="lede" ref={ledeRef}>แต่ละด่านสุ่มชุดดินในพื้นที่ ตอบคำถาม 3 ข้อให้ถูกเพื่อผ่านด่าน</p>
+      <p className="lede" ref={ledeRef}>แต่ละด่านสุ่มชุดดินในพื้นที่ มีคำถาม 3 ข้อ ตอบถูกอย่างน้อย 1 ข้อเพื่อผ่านด่าน ยิ่งตอบถูกเยอะยิ่งได้ดาวเยอะ</p>
       <div className="path" ref={pathRef}>
         <svg
           ref={svgRef}
