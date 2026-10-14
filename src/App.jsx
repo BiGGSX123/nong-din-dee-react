@@ -480,6 +480,7 @@ export default function App() {
         quizStep={quizStep}
         player={player}
       />
+      {screen === 'level-select' && <div className="map-backdrop" />}
       <div className={`screen ${screen === 'level-select' ? 'map-screen' : ''}`}>
         <div className="screen-content" key={screen}>{content}</div>
       </div>

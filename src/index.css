@@ -47,6 +47,10 @@ body {
 #root { display: contents; }
 .phone {
   position: relative;
+  /* establishes its own stacking context so children with negative z-index
+     (e.g. .map-backdrop) resolve against .phone's own background instead of
+     escaping up to a much higher ancestor and painting behind it entirely */
+  isolation: isolate;
   width: 100%; max-width: 560px; background: var(--cream);
   overflow: hidden; height: 100dvh; display: flex; flex-direction: column;
 }
@@ -268,32 +272,27 @@ h1 { font-size: 21px; margin: 0 0 5px; font-weight: 800; letter-spacing: -0.01em
 .lede { font-size: 12.5px; color: var(--soil-mid); margin: 0 0 16px; line-height: 1.55; }
 
 /* ---------- level path ---------- */
+/* the map's background is a single illustrated scene, not a tileable
+   texture — .map-backdrop is a sibling of the scrolling .screen (see
+   App.jsx), absolutely positioned against .phone (not .screen), so it stays
+   put as a fixed backdrop while the level list scrolls over it instead of
+   scrolling away with the content or stretching to the content's full height */
+.map-backdrop {
+  position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(245,239,227,0.55) 0%, rgba(245,239,227,0.15) 140px, transparent 260px),
+    url('/bg/map-bg.webp') center top / cover no-repeat;
+}
 .screen.map-screen {
   padding: 0 0 22px;
   position: relative;
-  background:
-    /* sun glow at the top of the world */
-    radial-gradient(ellipse 70% 220px at 50% -30px, color-mix(in srgb, var(--wheat) 30%, transparent), transparent 70%),
-    /* scattered leafy canopy blobs, denser near the top, thinning going down */
-    radial-gradient(ellipse 130px 46px at 12% 6%, color-mix(in srgb, var(--leaf-light) 50%, transparent), transparent),
-    radial-gradient(ellipse 110px 40px at 88% 16%, color-mix(in srgb, var(--leaf-light) 45%, transparent), transparent),
-    radial-gradient(ellipse 150px 48px at 22% 34%, color-mix(in srgb, var(--leaf-light) 38%, transparent), transparent),
-    radial-gradient(ellipse 120px 42px at 92% 48%, color-mix(in srgb, var(--leaf-light) 40%, transparent), transparent),
-    radial-gradient(ellipse 140px 46px at 8% 66%, color-mix(in srgb, var(--leaf-light) 34%, transparent), transparent),
-    radial-gradient(ellipse 120px 40px at 85% 80%, color-mix(in srgb, var(--leaf-light) 30%, transparent), transparent),
-    linear-gradient(180deg, color-mix(in srgb, var(--sky) 55%, var(--cream)) 0%, color-mix(in srgb, var(--leaf-light) 22%, var(--cream)) 260px, var(--paper) 520px, var(--paper) 100%);
+  background: transparent;
 }
-/* faint drifting cloud shapes, purely decorative and behind everything */
-.screen.map-screen::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 260px; pointer-events: none; z-index: 0;
-  background:
-    radial-gradient(ellipse 60px 18px at 20% 24px, rgba(255,255,255,0.55), transparent 70%),
-    radial-gradient(ellipse 46px 15px at 34% 30px, rgba(255,255,255,0.5), transparent 70%),
-    radial-gradient(ellipse 70px 20px at 78% 54px, rgba(255,255,255,0.45), transparent 70%),
-    radial-gradient(ellipse 50px 16px at 90% 46px, rgba(255,255,255,0.4), transparent 70%);
+.map-screen h1, .map-screen .lede {
+  padding: 16px 16px 0; position: relative; z-index: 5;
+  text-shadow: 0 1px 3px rgba(245,239,227,0.85), 0 1px 8px rgba(245,239,227,0.6);
 }
-.map-screen h1, .map-screen .lede { padding: 16px 16px 0; position: relative; z-index: 5; }
-.map-screen .lede { padding-top: 2px; }
+.map-screen .lede { padding-top: 2px; color: var(--soil-dark); }
 .map-screen .screen-content { position: relative; z-index: 1; }
 
 .progress-banner { display: flex; justify-content: space-between; align-items: center; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 10px 14px; margin-bottom: 14px; box-shadow: var(--shadow); font-size: 12px; }
