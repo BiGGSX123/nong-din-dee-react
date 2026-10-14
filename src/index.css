@@ -720,3 +720,30 @@ button.btn:not(:disabled):active { transform: translateY(3px); }
 @media (prefers-reduced-motion: reduce) { .mascot-tip { animation: none; } }
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* ---------- narrow phones: the map bubbles and mascot tip were sized for
+   the wider end of the game frame (~430-560px) and feel oversized on an
+   actual small phone screen — scale both down below ~420px ---------- */
+@media (max-width: 420px) {
+  .path { padding: 32px 10px 24px; }
+  .level-node { width: 148px; gap: 7px; }
+  .level-node-row { margin-bottom: -38px; }
+  .bubble { width: 128px; height: 128px; border-width: 6px; }
+  .level-node .num {
+    top: -10px; right: -8px; width: 34px; height: 34px; font-size: 15px; border-width: 2px;
+  }
+  .level-node .home-badge {
+    top: -12px; left: -9px; width: 36px; height: 36px; font-size: 20px; border-width: 2px;
+  }
+  .lock-icon { font-size: 44px; }
+  .level-node .prov-pill { font-size: 13px; padding: 5px 12px; max-width: 142px; }
+  .level-node .stars { bottom: 6px; }
+  .level-node .stars .star-icon { width: 24px; height: 24px; }
+  .level-node .stars .star-icon:nth-child(2) { width: 29px; height: 29px; }
+
+  .mascot-tip { right: 6px; bottom: 72px; gap: 6px; }
+  .mascot-tip img { height: 140px; }
+  .mascot-tip-bubble { padding: 12px 28px 12px 14px; max-width: 200px; transform: translateY(-50px); }
+  .mascot-tip-bubble p { font-size: 13.5px; line-height: 1.5; }
+  .mascot-tip-close { width: 22px; height: 22px; font-size: 11px; }
+}
