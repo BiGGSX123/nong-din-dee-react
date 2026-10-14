@@ -288,11 +288,16 @@ h1 { font-size: 21px; margin: 0 0 5px; font-weight: 800; letter-spacing: -0.01em
   position: relative;
   background: transparent;
 }
-.map-screen h1, .map-screen .lede {
-  padding: 16px 16px 0; position: relative; z-index: 5;
-  text-shadow: 0 1px 3px rgba(245,239,227,0.85), 0 1px 8px rgba(245,239,227,0.6);
+/* a text-shadow halo alone wasn't enough to separate the title/lede from
+   the busier parts of the background photo — a solid-ish panel reads
+   reliably regardless of what's behind it */
+.map-header {
+  margin: 16px 16px 0; padding: 12px 14px; position: relative; z-index: 5;
+  background: rgba(245,239,227,0.88); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);
+  border-radius: var(--radius-md); box-shadow: var(--shadow);
 }
-.map-screen .lede { padding-top: 2px; color: var(--soil-dark); }
+.map-header h1 { margin: 0 0 4px; }
+.map-header .lede { margin: 0; color: var(--soil-dark); }
 .map-screen .screen-content { position: relative; z-index: 1; }
 
 .progress-banner { display: flex; justify-content: space-between; align-items: center; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 10px 14px; margin-bottom: 14px; box-shadow: var(--shadow); font-size: 12px; }
@@ -449,12 +454,12 @@ h1 { font-size: 21px; margin: 0 0 5px; font-weight: 800; letter-spacing: -0.01em
 
 .choices-4 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
 .crop-choice {
-  border: 1.5px solid var(--line); background: var(--cream); border-radius: var(--radius-md); padding: 8px; cursor: pointer; text-align: center; font-family: inherit;
+  border: 1.5px solid var(--line); background: var(--cream); border-radius: var(--radius-md); padding: 8px; cursor: pointer; text-align: center; font-family: inherit; color: var(--soil-dark);
   transition: border-color 0.15s ease, background 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
   box-shadow: 0 1px 0 rgba(74,52,35,0.05);
 }
 .crop-choice img { width: 100%; aspect-ratio: 1; object-fit: contain; filter: drop-shadow(0 3px 3px rgba(74,52,35,0.15)); }
-.crop-choice .name { font-size: 11.5px; font-weight: 700; margin-top: 4px; }
+.crop-choice .name { font-size: 11.5px; font-weight: 700; margin-top: 4px; color: inherit; }
 .crop-choice.correct { border-color: var(--ok); background: color-mix(in srgb, var(--ok) 16%, var(--card)); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok) 18%, transparent); }
 .crop-choice.wrong { border-color: var(--bad); background: color-mix(in srgb, var(--bad) 12%, var(--card)); }
 .crop-choice:disabled { cursor: default; }
