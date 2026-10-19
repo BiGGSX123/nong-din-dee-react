@@ -1,0 +1,46 @@
+# production stack for a self-hosted VM: Postgres + the API server, both on
+# an internal network. The API's port is bound to 127.0.0.1 only — nginx
+# (run directly on the host, not in Docker) is what actually faces the
+# internet and reverse-proxies /api/* to it; the frontend build (`dist/`) is
+# also served by that same host nginx. See infra/README.md for the full setup.
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ndd
+      POSTGRES_USER: ndd
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - ndd_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ndd -d ndd"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks:
+      - ndd_net
+
+  api:
+    build: ./server
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://ndd:${POSTGRES_PASSWORD}@db:5432/ndd
+      SESSION_JWT_SECRET: ${SESSION_JWT_SECRET:?set SESSION_JWT_SECRET in .env}
+      PORT: 8787
+      CLIENT_ORIGIN: ${CLIENT_ORIGIN:?set CLIENT_ORIGIN in .env}
+      NODE_ENV: production
+      LINE_CHANNEL_ID: ${LINE_CHANNEL_ID:-}
+    ports:
+      - "127.0.0.1:8787:8787"
+    networks:
+      - ndd_net
+
+volumes:
+  ndd_postgres_data:
+
+networks:
+  ndd_net:
