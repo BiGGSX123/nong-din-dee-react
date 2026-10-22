@@ -17,7 +17,7 @@ export default function KnowledgeScreen({ careMethods, fertilizers }) {
       <div className="lede">ความรู้เรื่องดิน พืช และปุ๋ย จากกรมพัฒนาที่ดิน สรุปให้เข้าใจง่าย</div>
       <div className="know-hero">
         <img src="/mascot/nong-din-dee.png" alt="" />
-        <p>สวัสดีครับ! ผม <b>น้องดินดี</b> — รู้จักดินให้ลึก เลือกพืชให้ถูก ใส่ปุ๋ยให้ตรง ผลผลิตจะดีขึ้นแน่นอน</p>
+        <p>สวัสดีค่ะ! หนู<b>น้องดินดี</b>เอง — รู้จักดินให้ลึก เลือกพืชให้ถูก ใส่ปุ๋ยให้ตรง ผลผลิตจะดีขึ้นแน่นอน</p>
       </div>
       <div className="panel">
         <h3>วิธีดูแล/ปรับปรุงดิน</h3>
