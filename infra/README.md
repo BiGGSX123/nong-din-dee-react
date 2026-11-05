@@ -48,19 +48,37 @@ git pull
 ./infra/deploy.sh
 ```
 
-## Adding a real domain + HTTPS later
+## HTTPS
 
-Needed before LINE LIFF login will actually work in production (Let's
-Encrypt can't issue a certificate for a bare IP).
+The org has its own centrally-issued wildcard certificate for `*.ldd.go.th`
+(GlobalSign OV, valid through Apr 2027) rather than using Let's Encrypt, so
+there's no certbot step. It's already installed:
 
-1. Point the domain's DNS A record at this VM's IP
-2. Edit `/etc/nginx/sites-available/nong-din-dee`: change `server_name _;` to `server_name your-domain.com;`
-3. `apt-get install -y certbot python3-certbot-nginx`
-4. `certbot --nginx -d your-domain.com` (also sets up auto-renewal)
-5. Update `.env.prod`: `CLIENT_ORIGIN=https://your-domain.com`, fill in `LINE_CHANNEL_ID`
-6. Set `VITE_LIFF_ID` as a build-time env var before the next `./infra/deploy.sh` (or export it in the shell that runs the script, since the frontend build step reads it from the environment)
-7. Update the LIFF app's Endpoint URL in the LINE Developers Console to `https://your-domain.com`
-8. `./infra/deploy.sh` to rebuild with the new config
+- `/etc/nginx/ssl/ldd-wildcard/fullchain.crt` (leaf + intermediate, `644`)
+- `/etc/nginx/ssl/ldd-wildcard/privkey.key` (`600`, root-only)
+- wired into `infra/nginx.conf`'s `443 ssl` server block (`server_name _;`,
+  so it answers for any hostname — the cert being a wildcard is what makes
+  that work for any `*.ldd.go.th` subdomain)
+
+This only covers `*.ldd.go.th` / `ldd.go.th` — **not** the bare IP, so
+`https://101.44.56.196` will still show a browser warning and LINE LIFF
+will refuse to load it there. What's still needed to actually go live:
+
+1. Pick a subdomain (e.g. `nongdindee.ldd.go.th`) and have IT point its DNS
+   A record at this VM's IP — the cert already covers whatever subdomain is
+   chosen, no new cert needed
+2. Update `.env.prod`: `CLIENT_ORIGIN=https://nongdindee.ldd.go.th` (or
+   whichever subdomain), fill in `LINE_CHANNEL_ID`
+3. Set `VITE_LIFF_ID` as a build-time env var before the next
+   `./infra/deploy.sh` (or export it in the shell that runs the script,
+   since the frontend build step reads it from the environment)
+4. Update the LIFF app's Endpoint URL in the LINE Developers Console to
+   `https://nongdindee.ldd.go.th`
+5. `./infra/deploy.sh` to rebuild with the new config
+
+The cert expires **2027-04-10** — renewal has to come from the same
+internal process that issued this one (not certbot auto-renewal), so
+whoever manages it on the IT side should be reminded before then.
 
 ## Notes
 
