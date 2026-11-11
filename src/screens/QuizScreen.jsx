@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { cropById } from '../data/content';
-import { getSuitabilityTier } from '../data/knowledge';
+import { getSuitabilityTier, CROP_FERT_CORRECT } from '../data/knowledge';
 import { playCorrect, playWrong } from '../lib/sound';
 
 const QUIZ_TIME_MS = 20000;
@@ -75,7 +75,10 @@ export default function QuizScreen({ level, levelNumber, soil, step, pickedCropI
         // wherever the real data says they're at least moderately suited
         isCorrect = getSuitabilityTier(extra, soil.id) >= 1;
       }
-      else if (kind === 'fert') isCorrect = extra === level.fertCorrectIdx;
+      else if (kind === 'fert') {
+        const fertCorrectIdx = picked ? CROP_FERT_CORRECT[picked.id] : level.fertCorrectIdx;
+        isCorrect = extra === fertCorrectIdx;
+      }
     }
     setAnsweredIdx(idx);
     setCorrect(isCorrect);
@@ -190,7 +193,7 @@ export default function QuizScreen({ level, levelNumber, soil, step, pickedCropI
           for (let idx = 0; idx < fertilizers.length; idx++) {
             if (!fertOrder.includes(idx)) fertOrder.push(idx);
           }
-          const correctCrop = cropById(level.cropCorrectId);
+          const correctCrop = picked || cropById(level.cropCorrectId);
           return (
             <>
               <h2>3/3 · ควรใส่ปุ๋ยชนิดใดให้ {correctCrop ? correctCrop.nameTh : ''}?</h2>
