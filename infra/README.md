@@ -69,9 +69,9 @@ will refuse to load it there. What's still needed to actually go live:
    chosen, no new cert needed
 2. Update `.env.prod`: `CLIENT_ORIGIN=https://nongdindee.ldd.go.th` (or
    whichever subdomain), fill in `LINE_CHANNEL_ID`
-3. Set `VITE_LIFF_ID` as a build-time env var before the next
-   `./infra/deploy.sh` (or export it in the shell that runs the script,
-   since the frontend build step reads it from the environment)
+3. Set `VITE_LIFF_ID=<liff id>` in `.env.prod` — `deploy.sh` passes it into
+   the frontend build (it prints `LINE login: ON/OFF` so you can tell). An
+   exported `VITE_LIFF_ID` in the shell overrides the file.
 4. Update the LIFF app's Endpoint URL in the LINE Developers Console to
    `https://nongdindee.ldd.go.th`
 5. `./infra/deploy.sh` to rebuild with the new config

@@ -5,8 +5,15 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+# VITE_* values are baked into the frontend at build time, and the build runs
+# in a throwaway container — so pass them in explicitly. VITE_LIFF_ID comes
+# from the shell if exported, otherwise from .env.prod; empty = guest mode
+# (no LINE login).
+VITE_LIFF_ID="${VITE_LIFF_ID:-$(sed -n 's/^VITE_LIFF_ID=//p' .env.prod | tail -n 1)}"
+if [ -n "$VITE_LIFF_ID" ]; then echo "==> LINE login: ON (LIFF id set)"; else echo "==> LINE login: OFF (guest mode — VITE_LIFF_ID not set)"; fi
+
 echo "==> building frontend"
-docker run --rm -v "$PWD":/app -w /app node:20-alpine sh -c "npm ci && npm run build"
+docker run --rm -e VITE_LIFF_ID="$VITE_LIFF_ID" -v "$PWD":/app -w /app node:20-alpine sh -c "npm ci && npm run build"
 
 echo "==> building + starting db + api containers"
 docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build
