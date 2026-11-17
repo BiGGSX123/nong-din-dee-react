@@ -1,5 +1,6 @@
 import cron from 'node-cron';
 import { prisma } from '../db.js';
+import { logPoints } from '../pointLog.js';
 
 const DAILY_BONUS_RATE = 0.01; // 1% — e.g. 100 points -> +1 point
 
@@ -12,7 +13,10 @@ export async function applyDailyBonus() {
   for (const p of players) {
     const bonus = Math.round(p.points * DAILY_BONUS_RATE);
     if (bonus <= 0) continue;
-    await prisma.player.update({ where: { id: p.id }, data: { points: p.points + bonus } });
+    await prisma.$transaction([
+      prisma.player.update({ where: { id: p.id }, data: { points: { increment: bonus } } }),
+      logPoints(prisma, p.id, bonus, 'dividend'),
+    ]);
     updated++;
   }
   console.log(`[daily-bonus] applied 1% bonus to ${updated}/${players.length} player(s)`);

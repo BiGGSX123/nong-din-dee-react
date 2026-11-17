@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { prisma } from '../db.js';
 import { requireAuth } from '../auth.js';
 import { personalizedOrder } from '../levelOrder.js';
+import { logPoints } from '../pointLog.js';
 
 export const progressRouter = Router();
 
@@ -29,6 +30,7 @@ progressRouter.post('/', requireAuth, async (req, res) => {
     delta !== 0
       ? prisma.player.update({ where: { id: req.playerId }, data: { points: { increment: delta } } })
       : prisma.player.findUnique({ where: { id: req.playerId } }),
+    ...(delta !== 0 ? [logPoints(prisma, req.playerId, delta, 'level', levelIndex)] : []),
   ]);
 
   // unlock the next level on a passing score, same rule the demo used (>=1 correct) —

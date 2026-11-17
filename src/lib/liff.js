@@ -18,15 +18,14 @@ function isJwtExpired(token) {
 }
 
 // resolves to a LIFF ID token to hand to POST /api/auth/line, or null in guest
-// mode / while LINE is redirecting to its own login page
+// mode / when the player still has to log in — the loading screen then shows
+// a "เข้าสู่ระบบด้วย LINE" button that calls startLiffLogin(). (Inside the LINE
+// app LIFF is already logged in, so players there never see the button.)
 export async function initLiffAndGetIdToken() {
   if (!isLiffEnabled()) return null;
   const { default: liff } = await import('@line/liff');
   await liff.init({ liffId: import.meta.env.VITE_LIFF_ID });
-  if (!liff.isLoggedIn()) {
-    liff.login(); // redirects; execution stops here for this page load
-    return null;
-  }
+  if (!liff.isLoggedIn()) return null;
   const idToken = liff.getIDToken();
   if (!idToken || isJwtExpired(idToken)) {
     // isLoggedIn() true but the ID token is missing or expired — this happens
@@ -36,12 +35,18 @@ export async function initLiffAndGetIdToken() {
     // has gone stale. liff.login() alone is a no-op once isLoggedIn() is
     // true, so it must be paired with logout() first to force LINE to mint a
     // genuinely fresh token — calling login() by itself just re-served the
-    // same expired token forever.
+    // same expired token forever. After logout the login button shows.
     liff.logout();
-    liff.login();
     return null;
   }
   return idToken;
+}
+
+// the login button: redirect to LINE's login page (comes back to this page)
+export async function startLiffLogin() {
+  const { default: liff } = await import('@line/liff');
+  try { await liff.init({ liffId: import.meta.env.VITE_LIFF_ID }); } catch { /* already initialized */ }
+  liff.login(); // redirects; execution stops here for this page load
 }
 
 // forces a redirect to LINE's login page regardless of current state — used

@@ -21,13 +21,21 @@ async function request(path, options = {}) {
 export const api = {
   getConfig: () => request('/api/admin/config'),
   getLeaderboard: (limit = 100) => request(`/api/leaderboard?limit=${limit}`),
+  getQuizLeaderboard: (mode, limit = 100) => request(`/api/leaderboard/quiz?mode=${mode}&limit=${limit}`),
+  getStarLeaderboard: (limit = 100) => request(`/api/leaderboard/stars?limit=${limit}`),
 
   loginWithLine: (idToken) => request('/api/auth/line', { method: 'POST', body: JSON.stringify({ idToken }) }),
   logout: () => request('/api/auth/logout', { method: 'POST' }),
   me: () => request('/api/auth/me'),
 
   saveProgress: (payload) => request('/api/progress', { method: 'POST', body: JSON.stringify(payload) }),
+  saveQuickQuiz: (results, boost, difficulty) => request('/api/quick-quiz', { method: 'POST', body: JSON.stringify({ results, boost, difficulty }) }),
+  buyItem: (itemId) => request('/api/shop/buy', { method: 'POST', body: JSON.stringify({ itemId }) }),
+  useItem: (itemId, context) => request('/api/shop/use', { method: 'POST', body: JSON.stringify({ itemId, context }) }),
+  buyCharacter: (charId) => request('/api/characters/buy', { method: 'POST', body: JSON.stringify({ charId }) }),
+  claimDailyBonus: () => request('/api/characters/claim', { method: 'POST' }),
 
+  getPointHistory: (limit = 60) => request(`/api/player/history?limit=${limit}`),
   setHomeProvince: (province) => request('/api/player/home-province', { method: 'PUT', body: JSON.stringify({ province }) }),
 };
 

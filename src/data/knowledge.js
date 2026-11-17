@@ -114,30 +114,30 @@ export const SOIL_PROBLEMS = Object.fromEntries(
 );
 
 // cropId -> soil suitability (best / moderate / poor), each a list of soilIds
-// — cropId/img match public/crops/{NN-slug}.png; nameTh/img cover all 20
+// — cropId/img match public/crops/{NN-slug}.webp; nameTh/img cover all 20
 // crops from the sheet even though only the first 10 are wired into
 // src/data/content.js CROPS (playable levels) so far
 export const CROP_KNOWLEDGE = [
-  { id: 'rice', nameTh: 'ข้าว', img: '/crops/01-rice.png', best: ['lowland-clay'], moderate: ['vertisol', 'acid-sulfate', 'saline'], poor: ['loam', 'sandy-loam', 'sandy', 'skeletal'] },
-  { id: 'rubber', nameTh: 'ยางพารา', img: '/crops/02-rubber.png', best: ['sandy-loam'], moderate: ['loam', 'sandy', 'skeletal'], poor: ['lowland-clay', 'vertisol', 'acid-sulfate', 'saline'] },
-  { id: 'cassava', nameTh: 'มันสำปะหลัง', img: '/crops/03-cassava.png', best: ['sandy-loam'], moderate: ['loam', 'sandy', 'skeletal'], poor: ['lowland-clay', 'vertisol', 'acid-sulfate', 'saline'] },
-  { id: 'sugarcane', nameTh: 'อ้อยโรงงาน', img: '/crops/04-sugarcane.png', best: ['loam', 'vertisol', 'sandy-loam'], moderate: ['lowland-clay', 'acid-sulfate', 'saline'], poor: ['sandy', 'skeletal'] },
-  { id: 'corn', nameTh: 'ข้าวโพด', img: '/crops/05-corn.png', best: ['loam', 'vertisol', 'sandy-loam'], moderate: [], poor: ['lowland-clay', 'sandy', 'acid-sulfate', 'saline', 'skeletal'] },
-  { id: 'oil-palm', nameTh: 'ปาล์มน้ำมัน', img: '/crops/06-oil-palm.png', best: ['sandy-loam'], moderate: ['loam', 'lowland-clay', 'sandy', 'acid-sulfate', 'saline'], poor: ['vertisol', 'skeletal'] },
-  { id: 'coffee', nameTh: 'กาแฟ', img: '/crops/07-coffee.png', best: ['loam', 'sandy-loam'], moderate: [], poor: ['lowland-clay', 'vertisol', 'sandy', 'acid-sulfate', 'saline', 'skeletal'] },
-  { id: 'coconut', nameTh: 'มะพร้าว', img: '/crops/08-coconut.png', best: ['loam', 'sandy-loam', 'sandy', 'saline'], moderate: ['lowland-clay', 'vertisol', 'acid-sulfate', 'skeletal'], poor: [] },
-  { id: 'durian', nameTh: 'ทุเรียน', img: '/crops/09-durian.png', best: ['loam'], moderate: [], poor: ['lowland-clay', 'vertisol', 'sandy-loam', 'sandy', 'acid-sulfate', 'saline', 'skeletal'] },
-  { id: 'mangosteen', nameTh: 'มังคุด', img: '/crops/10-mangosteen.png', best: ['loam'], moderate: [], poor: ['lowland-clay', 'vertisol', 'sandy-loam', 'sandy', 'acid-sulfate', 'saline', 'skeletal'] },
-  { id: 'longan', nameTh: 'ลำไย', img: '/crops/11-longan.png', best: ['loam'], moderate: ['sandy-loam'], poor: ['lowland-clay', 'vertisol', 'sandy', 'acid-sulfate', 'saline', 'skeletal'] },
-  { id: 'mango', nameTh: 'มะม่วง', img: '/crops/12-mango.png', best: ['loam', 'sandy-loam'], moderate: ['vertisol', 'sandy', 'skeletal'], poor: ['acid-sulfate', 'saline'] },
-  { id: 'pineapple', nameTh: 'สับปะรด', img: '/crops/13-pineapple.png', best: ['sandy-loam', 'acid-sulfate'], moderate: ['loam', 'sandy', 'skeletal'], poor: ['lowland-clay', 'vertisol', 'saline'] },
-  { id: 'pomelo', nameTh: 'ส้มโอ', img: '/crops/14-pomelo.png', best: ['loam'], moderate: ['lowland-clay', 'vertisol', 'acid-sulfate'], poor: ['sandy-loam', 'sandy', 'saline', 'skeletal'] },
-  { id: 'banana', nameTh: 'กล้วย', img: '/crops/16-banana.png', best: ['loam'], moderate: ['lowland-clay', 'vertisol', 'sandy-loam', 'acid-sulfate'], poor: ['sandy', 'saline', 'skeletal'] },
-  { id: 'chili', nameTh: 'พริก', img: '/crops/15-chili.png', best: ['loam'], moderate: ['sandy-loam'], poor: ['lowland-clay', 'vertisol', 'sandy', 'acid-sulfate', 'saline', 'skeletal'] },
-  { id: 'garlic', nameTh: 'กระเทียม', img: '/crops/17-garlic.png', best: ['loam'], moderate: ['sandy-loam'], poor: ['lowland-clay', 'vertisol', 'sandy', 'acid-sulfate', 'saline', 'skeletal'] },
-  { id: 'shallot', nameTh: 'หอมแดง', img: '/crops/18-shallot.png', best: ['loam'], moderate: ['sandy-loam'], poor: ['lowland-clay', 'vertisol', 'sandy', 'acid-sulfate', 'saline', 'skeletal'] },
-  { id: 'leafy-greens', nameTh: 'พืชตระกูลกะหล่ำ / ผักใบ', img: '/crops/19-leafy-greens.png', best: ['loam'], moderate: ['lowland-clay', 'vertisol', 'sandy-loam'], poor: ['sandy', 'acid-sulfate', 'saline', 'skeletal'] },
-  { id: 'legumes', nameTh: 'พืชตระกูลถั่ว', img: '/crops/20-legumes.png', best: ['loam', 'sandy-loam'], moderate: ['vertisol'], poor: ['lowland-clay', 'sandy', 'acid-sulfate', 'saline', 'skeletal'] },
+  { id: 'rice', nameTh: 'ข้าว', img: '/crops/01-rice.webp', best: ['lowland-clay'], moderate: ['vertisol', 'acid-sulfate', 'saline'], poor: ['loam', 'sandy-loam', 'sandy', 'skeletal'] },
+  { id: 'rubber', nameTh: 'ยางพารา', img: '/crops/02-rubber.webp', best: ['sandy-loam'], moderate: ['loam', 'sandy', 'skeletal'], poor: ['lowland-clay', 'vertisol', 'acid-sulfate', 'saline'] },
+  { id: 'cassava', nameTh: 'มันสำปะหลัง', img: '/crops/03-cassava.webp', best: ['sandy-loam'], moderate: ['loam', 'sandy', 'skeletal'], poor: ['lowland-clay', 'vertisol', 'acid-sulfate', 'saline'] },
+  { id: 'sugarcane', nameTh: 'อ้อยโรงงาน', img: '/crops/04-sugarcane.webp', best: ['loam', 'vertisol', 'sandy-loam'], moderate: ['lowland-clay', 'acid-sulfate', 'saline'], poor: ['sandy', 'skeletal'] },
+  { id: 'corn', nameTh: 'ข้าวโพด', img: '/crops/05-corn.webp', best: ['loam', 'vertisol', 'sandy-loam'], moderate: [], poor: ['lowland-clay', 'sandy', 'acid-sulfate', 'saline', 'skeletal'] },
+  { id: 'oil-palm', nameTh: 'ปาล์มน้ำมัน', img: '/crops/06-oil-palm.webp', best: ['sandy-loam'], moderate: ['loam', 'lowland-clay', 'sandy', 'acid-sulfate', 'saline'], poor: ['vertisol', 'skeletal'] },
+  { id: 'coffee', nameTh: 'กาแฟ', img: '/crops/07-coffee.webp', best: ['loam', 'sandy-loam'], moderate: [], poor: ['lowland-clay', 'vertisol', 'sandy', 'acid-sulfate', 'saline', 'skeletal'] },
+  { id: 'coconut', nameTh: 'มะพร้าว', img: '/crops/08-coconut.webp', best: ['loam', 'sandy-loam', 'sandy', 'saline'], moderate: ['lowland-clay', 'vertisol', 'acid-sulfate', 'skeletal'], poor: [] },
+  { id: 'durian', nameTh: 'ทุเรียน', img: '/crops/09-durian.webp', best: ['loam'], moderate: [], poor: ['lowland-clay', 'vertisol', 'sandy-loam', 'sandy', 'acid-sulfate', 'saline', 'skeletal'] },
+  { id: 'mangosteen', nameTh: 'มังคุด', img: '/crops/10-mangosteen.webp', best: ['loam'], moderate: [], poor: ['lowland-clay', 'vertisol', 'sandy-loam', 'sandy', 'acid-sulfate', 'saline', 'skeletal'] },
+  { id: 'longan', nameTh: 'ลำไย', img: '/crops/11-longan.webp', best: ['loam'], moderate: ['sandy-loam'], poor: ['lowland-clay', 'vertisol', 'sandy', 'acid-sulfate', 'saline', 'skeletal'] },
+  { id: 'mango', nameTh: 'มะม่วง', img: '/crops/12-mango.webp', best: ['loam', 'sandy-loam'], moderate: ['vertisol', 'sandy', 'skeletal'], poor: ['acid-sulfate', 'saline'] },
+  { id: 'pineapple', nameTh: 'สับปะรด', img: '/crops/13-pineapple.webp', best: ['sandy-loam', 'acid-sulfate'], moderate: ['loam', 'sandy', 'skeletal'], poor: ['lowland-clay', 'vertisol', 'saline'] },
+  { id: 'pomelo', nameTh: 'ส้มโอ', img: '/crops/14-pomelo.webp', best: ['loam'], moderate: ['lowland-clay', 'vertisol', 'acid-sulfate'], poor: ['sandy-loam', 'sandy', 'saline', 'skeletal'] },
+  { id: 'banana', nameTh: 'กล้วย', img: '/crops/16-banana.webp', best: ['loam'], moderate: ['lowland-clay', 'vertisol', 'sandy-loam', 'acid-sulfate'], poor: ['sandy', 'saline', 'skeletal'] },
+  { id: 'chili', nameTh: 'พริก', img: '/crops/15-chili.webp', best: ['loam'], moderate: ['sandy-loam'], poor: ['lowland-clay', 'vertisol', 'sandy', 'acid-sulfate', 'saline', 'skeletal'] },
+  { id: 'garlic', nameTh: 'กระเทียม', img: '/crops/17-garlic.webp', best: ['loam'], moderate: ['sandy-loam'], poor: ['lowland-clay', 'vertisol', 'sandy', 'acid-sulfate', 'saline', 'skeletal'] },
+  { id: 'shallot', nameTh: 'หอมแดง', img: '/crops/18-shallot.webp', best: ['loam'], moderate: ['sandy-loam'], poor: ['lowland-clay', 'vertisol', 'sandy', 'acid-sulfate', 'saline', 'skeletal'] },
+  { id: 'leafy-greens', nameTh: 'พืชตระกูลกะหล่ำ / ผักใบ', img: '/crops/19-leafy-greens.webp', best: ['loam'], moderate: ['lowland-clay', 'vertisol', 'sandy-loam'], poor: ['sandy', 'acid-sulfate', 'saline', 'skeletal'] },
+  { id: 'legumes', nameTh: 'พืชตระกูลถั่ว', img: '/crops/20-legumes.webp', best: ['loam', 'sandy-loam'], moderate: ['vertisol'], poor: ['lowland-clay', 'sandy', 'acid-sulfate', 'saline', 'skeletal'] },
 ];
 
 // 2 = best, 1 = moderate, 0 = poor/unlisted — used to grade the quiz's "which

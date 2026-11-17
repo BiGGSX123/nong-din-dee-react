@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "game-asset-gen": {
+      "command": "npx",
+      "args": ["-y", "mcp-game-asset-gen"],
+      "env": {
+        "OPENAI_API_KEY": "${OPENAI_API_KEY}",
+        "GEMINI_API_KEY": "${GEMINI_API_KEY}",
+        "FAL_KEY": "${FAL_KEY}"
+      }
+    }
+  }
+}

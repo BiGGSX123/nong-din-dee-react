@@ -7,6 +7,9 @@ import { progressRouter } from './routes/progress.js';
 import { leaderboardRouter } from './routes/leaderboard.js';
 import { adminRouter } from './routes/admin.js';
 import { playerRouter } from './routes/player.js';
+import { quickQuizRouter } from './routes/quickQuiz.js';
+import { shopRouter } from './routes/shop.js';
+import { charactersRouter } from './routes/characters.js';
 import { scheduleDailyBonus } from './cron/dailyBonus.js';
 
 const app = express();
@@ -21,6 +24,9 @@ app.use('/api/progress', progressRouter);
 app.use('/api/leaderboard', leaderboardRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/player', playerRouter);
+app.use('/api/quick-quiz', quickQuizRouter);
+app.use('/api/shop', shopRouter);
+app.use('/api/characters', charactersRouter);
 
 scheduleDailyBonus();
 

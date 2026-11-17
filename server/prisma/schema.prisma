@@ -13,6 +13,13 @@ model Player {
   displayName String
   pictureUrl  String?
   points      Int             @default(0)
+  // shop items owned, e.g. { "time": 2, "double": 1 } — bought with points
+  // via /api/shop (see src/shopItems.js for the catalog + prices)
+  items       Json            @default("{}")
+  // special characters owned (ids, see src/characters.js) — permanent, each
+  // pays a daily bonus; charClaimDate = last Bangkok date it was claimed
+  characters  Json            @default("[]")
+  charClaimDate String?
   // "player" | "admin" — replaces the old shared ADMIN_TOKEN gate; admin API
   // routes now check this on the logged-in session instead of a bearer secret
   role        String          @default("player")
@@ -23,6 +30,42 @@ model Player {
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
   progress    LevelProgress[]
+  pointLogs   PointLog[]
+  quizBests   QuizBest[]
+}
+
+// best "ถูกหรือผิด?" result per player per mode (easy|medium|hard|survival) —
+// the quiz leaderboard. bestScore = round points as awarded (x2 item
+// included); bestCorrect = answers right in that run; bestCombo = longest streak
+// ever in this mode (tracked on its own, may come from a different run).
+model QuizBest {
+  id          String   @id @default(cuid())
+  playerId    String
+  player      Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  mode        String
+  bestScore   Int      @default(0)
+  bestCorrect Int      @default(0)
+  bestCombo   Int      @default(0)
+  achievedAt  DateTime @default(now())
+
+  @@unique([playerId, mode])
+  @@index([mode, bestScore])
+}
+
+// one row per change to Player.points (earned > 0, spent < 0) — the player's
+// points history on the profile screen. See server/src/pointLog.js.
+model PointLog {
+  id        String   @id @default(cuid())
+  playerId  String
+  player    Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  amount    Int
+  // level | quiz | shop | character | daily | dividend
+  kind      String
+  // what it was for: levelIndex / difficulty (":x2" if doubled) / itemId / charId
+  ref       String?
+  createdAt DateTime @default(now())
+
+  @@index([playerId, createdAt])
 }
 
 model LevelProgress {

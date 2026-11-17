@@ -1,0 +1,4 @@
+STYLE: cute stylized 3D "clay toy" game art for a casual mobile game. Handmade polymer-clay material with a soft satin sheen (not candy, not frosting, not plastic toy), chunky rounded shapes, slightly exaggerated proportions, soft key light from upper-left, gentle ambient occlusion. Bright, saturated, cheerful natural colors: leaf greens, sunny golds, warm earthy browns. Strong silhouette, no tiny noisy detail. No outline glow, no rim halo. Absolutely no text, letters, logos or watermark.
+
+SUBJECT: A single game item icon: a glossy red map location pin with a white dot, standing on a tiny patch of grass.
+Chunky, cute, simple bold silhouette that stays readable at 48px. Slight 3/4 view from above. Single object centered with ~10% padding. Plain pure white background (#FFFFFF), no background shadow, no text or numbers anywhere.

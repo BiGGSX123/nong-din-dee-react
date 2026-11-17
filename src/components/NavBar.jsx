@@ -11,7 +11,10 @@ export default function NavBar({ screen, onNavigate, tabs = NAV_TABS }) {
           onClick={() => onNavigate(t.id)}
           type="button"
         >
-          <span className="nav-icon-wrap"><span className="nav-icon">{t.icon}</span></span>
+          <span className="nav-icon-wrap">
+            {/* clay icon art when available, emoji otherwise (e.g. the ❓ tab) */}
+            {t.img ? <img className="nav-icon-img" src={t.img} alt="" /> : <span className="nav-icon">{t.icon}</span>}
+          </span>
           <span className="nav-label">{t.label}</span>
         </button>
       ))}
