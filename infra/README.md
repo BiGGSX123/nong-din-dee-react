@@ -48,6 +48,14 @@ git pull
 ./infra/deploy.sh
 ```
 
+If `infra/nginx.conf` changed in that pull, also install it:
+
+```bash
+cp /etc/nginx/sites-available/nong-din-dee /etc/nginx/sites-available/nong-din-dee.bak
+cp infra/nginx.conf /etc/nginx/sites-available/nong-din-dee
+nginx -t && systemctl reload nginx
+```
+
 ## HTTPS
 
 The org has its own centrally-issued wildcard certificate for `*.ldd.go.th`

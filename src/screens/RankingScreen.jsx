@@ -233,7 +233,7 @@ export default function RankingScreen({ player, isLoggedIn, points, completedCou
                     : <span className="rank-list-avatar placeholder">{p.name.charAt(0)}</span>}
                   <span className="rank-list-name">
                     <span className="rank-list-name-row">{p.name}{p.me && <span className="me-tag">คุณ</span>}</span>
-                    {isStars && <small>แผนที่ {p.mapScore.toLocaleString()} · {p.pts.toLocaleString()} แต้ม</small>}
+                    {isStars && <small>{p.pts.toLocaleString()} แต้ม</small>}
                   </span>
                   <span className={`rank-list-pts ${isStars ? 'stars' : ''}`}>{metric(p)}</span>
                 </div>

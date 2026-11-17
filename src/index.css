@@ -501,13 +501,19 @@ h1 { font-size: calc(21px * var(--text-scale)); margin: 0 0 5px; font-weight: 80
   transform: translateX(-50%); z-index: 2;
 }
 .bubble-crop.fresh, .bubble-crop.wilted { filter: var(--sticker-outline) drop-shadow(0 3px 4px rgba(0,0,0,0.25)); }
-.level-node.current .bubble { border-color: var(--leaf); animation: pulseGlow 1.8s ease-in-out infinite; }
-.level-node.completed .bubble { border-color: var(--wheat); }
-@keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 7px 0 rgba(74,52,35,0.22), var(--shadow), 0 0 0 0 color-mix(in srgb, var(--leaf) 55%, transparent); }
-  50% { box-shadow: 0 7px 0 rgba(74,52,35,0.22), var(--shadow), 0 0 0 14px color-mix(in srgb, var(--leaf) 0%, transparent); }
+/* current level: an expanding ring BEHIND the bubble (transform + opacity
+   only, so the GPU animates it). Animating the bubble's own box-shadow forced
+   a repaint of the whole bubble — soil art + its sticker-outline filters —
+   every frame, which made the map stutter on phones. */
+.level-node.current .bubble { border-color: var(--leaf); }
+.level-node.current .bubble::before {
+  content: ""; position: absolute; inset: -7px; z-index: -1; border-radius: 50%; pointer-events: none;
+  border: 10px solid color-mix(in srgb, var(--leaf) 55%, transparent);
+  animation: ringPulse 1.8s ease-out infinite; will-change: transform, opacity;
 }
-@media (prefers-reduced-motion: reduce) { .level-node.current .bubble { animation: none; } }
+@keyframes ringPulse { 0% { transform: scale(0.96); opacity: 0.9; } 100% { transform: scale(1.2); opacity: 0; } }
+.level-node.completed .bubble { border-color: var(--wheat); }
+@media (prefers-reduced-motion: reduce) { .level-node.current .bubble::before { animation: none; opacity: 0; } }
 
 .level-node.just-unlocked .bubble { animation: unlockPop 0.8s cubic-bezier(.34,1.56,.64,1); }
 @keyframes unlockPop {
@@ -1709,9 +1715,7 @@ img.know-tab-icon { width: 30px; height: 30px; object-fit: contain; filter: drop
   display: block; height: 100%; border-radius: 999px;
   background: repeating-linear-gradient(-45deg, rgba(255,255,255,0.28) 0 6px, rgba(255,255,255,0) 6px 12px), linear-gradient(180deg, #A6E070, #4FA63A);
   background-size: 17px 17px, 100% 100%; box-shadow: inset 0 -2px 0 rgba(0,0,0,0.12);
-  animation: barStripes 1s linear infinite;
 }
-@keyframes barStripes { to { background-position: 17px 0, 0 0; } }
 .map-progress-stars { flex-shrink: 0; display: inline-flex; align-items: center; gap: 3px; padding: 1px 9px 1px 4px; border-radius: 999px;
   font-size: calc(13px * var(--text-scale)); font-weight: 900; color: #8A560B; background: linear-gradient(180deg, #FFF3C0, #FFE08A); box-shadow: 0 2px 0 #D9A13A; }
 .map-progress-stars .star-icon { width: 20px; height: 20px; }
@@ -2311,9 +2315,8 @@ button.reward-btn:not(:disabled):active { transform: translateY(3px); box-shadow
 }
 .pf-wallet::before { /* shine sweep */
   content: ""; position: absolute; top: -40%; bottom: -40%; width: 40px; left: -60px; transform: rotate(20deg);
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent); animation: pfShine 4.5s ease-in-out 1s infinite;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent);
 }
-@keyframes pfShine { 0%, 70% { left: -60px; } 100% { left: 110%; } }
 .pf-wallet-main { position: relative; display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
 .pf-wallet-coin { width: 58px; height: 58px; object-fit: contain; filter: drop-shadow(0 4px 4px rgba(120,70,0,0.35)); animation: pfCoin 3s ease-in-out infinite; }
 @keyframes pfCoin { 0%, 100% { transform: translateY(0) rotate(-6deg); } 50% { transform: translateY(-4px) rotate(6deg); } }
@@ -2429,7 +2432,7 @@ button.reward-btn:not(:disabled):active { transform: translateY(3px); box-shadow
   position: relative; display: block; height: 100%; width: 8%; border-radius: 999px;
   background: repeating-linear-gradient(-45deg, rgba(255,255,255,0.3) 0 7px, rgba(255,255,255,0) 7px 14px), linear-gradient(180deg, #A6E070, #4FA63A);
   background-size: 20px 20px, 100% 100%; box-shadow: inset 0 -3px 0 rgba(0,0,0,0.12);
-  transform: none; animation: loadFill 3.2s cubic-bezier(.2,.7,.3,1) forwards, loadStripes 0.8s linear infinite;
+  transform: none;
 }
 .loading-screen .loading-bar span::after {
   content: ""; position: absolute; right: -14px; top: 50%; width: 30px; height: 30px; margin-top: -21px;
@@ -2437,7 +2440,6 @@ button.reward-btn:not(:disabled):active { transform: translateY(3px); box-shadow
   animation: sproutBob 0.9s ease-in-out infinite alternate;
 }
 @keyframes loadFill { from { width: 8%; } to { width: 92%; } }
-@keyframes loadStripes { to { background-position: 20px 0, 0 0; } }
 @keyframes sproutBob { from { transform: translateY(0) rotate(-6deg); } to { transform: translateY(-3px) rotate(6deg); } }
 @media (prefers-reduced-motion: reduce) { .loading-screen .loading-bar span { animation: none; width: 60%; } .loading-screen .loading-bar span::after { animation: none; } }
 
@@ -2604,11 +2606,9 @@ button.reward-btn:not(:disabled):active { transform: translateY(3px); box-shadow
 .quiz-board-list li.gold::after, .quiz-board-list li.silver::after, .quiz-board-list li.bronze::after {
   content: ""; position: absolute; top: -50%; bottom: -50%; left: -40%; width: 30%; z-index: -1; transform: rotate(20deg);
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.75), transparent);
-  animation: qbShine 3.6s ease-in-out infinite;
 }
 .quiz-board-list li.silver::after { animation-delay: 0.5s; }
 .quiz-board-list li.bronze::after { animation-delay: 1s; }
-@keyframes qbShine { 0%, 55% { left: -40%; } 100% { left: 120%; } }
 /* tiny sparkles on the gold row */
 .quiz-board-list li.gold::before {
   content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
@@ -2634,3 +2634,50 @@ button.reward-btn:not(:disabled):active { transform: translateY(3px); box-shadow
 /* room for the crown inside the gold row (rows clip their shine) */
 .quiz-board-list li.gold { padding-top: 16px; }
 .qb-crown { top: -12px; }
+
+/* logo layering: lettering always paints above the emblem art (explicit, so
+   every browser — Safari included — stacks it the same way) */
+.game-logo-emblem { z-index: 1; }
+.game-logo-art { z-index: 0; }
+.game-logo-title { z-index: 2; }
+.game-logo-word { z-index: 3; }
+.game-logo-badge { z-index: 3; }
+
+/* ---------- performance: GPU-only versions of the looping effects ----------
+   Animating background-position / left / box-shadow repaints the element
+   every frame (expensive on phones, especially over filtered art). These
+   overrides move the same visuals onto pseudo-elements animated with
+   transform only, so the GPU composites them without repainting. */
+
+/* moving stripes: map progress bar + loading bar */
+.map-progress-bar i { position: relative; overflow: hidden; animation: none;
+  background: linear-gradient(180deg, #A6E070, #4FA63A); }
+.map-progress-bar i::before,
+.loading-screen .loading-bar span::before {
+  content: ""; position: absolute; top: 0; bottom: 0; left: -24px; right: 0; border-radius: inherit; pointer-events: none;
+  background: repeating-linear-gradient(-45deg, rgba(255,255,255,0.28) 0 6px, rgba(255,255,255,0) 6px 12px);
+  will-change: transform; animation: stripesSlide 1s linear infinite;
+}
+.loading-screen .loading-bar span { animation: loadFill 3.2s cubic-bezier(.2,.7,.3,1) forwards;
+  background: linear-gradient(180deg, #A6E070, #4FA63A); }
+.loading-screen .loading-bar span::before { overflow: hidden; }
+/* 12px = one -45° stripe period along x (6px band + 6px gap, √2·8.49) */
+@keyframes stripesSlide { from { transform: translateX(0); } to { transform: translateX(16.97px); } }
+
+/* shine sweeps: profile wallet + ถูก/ผิด gold/silver/bronze rows */
+.pf-wallet::before,
+.quiz-board-list li.gold::after, .quiz-board-list li.silver::after, .quiz-board-list li.bronze::after {
+  inset: 0; top: 0; bottom: 0; left: 0; width: auto;
+  background: linear-gradient(105deg, transparent 38%, rgba(255,255,255,0.6) 50%, transparent 62%);
+  transform: translateX(-110%); will-change: transform;
+}
+.pf-wallet::before { animation: shineSweep 4.5s ease-in-out 1s infinite; }
+.quiz-board-list li.gold::after { animation: shineSweep 3.6s ease-in-out infinite; }
+.quiz-board-list li.silver::after { animation: shineSweep 3.6s ease-in-out 0.5s infinite; }
+.quiz-board-list li.bronze::after { animation: shineSweep 3.6s ease-in-out 1s infinite; }
+@keyframes shineSweep { 0%, 60% { transform: translateX(-110%); } 100% { transform: translateX(110%); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .map-progress-bar i::before, .loading-screen .loading-bar span::before,
+  .pf-wallet::before, .quiz-board-list li::after { animation: none; }
+}
