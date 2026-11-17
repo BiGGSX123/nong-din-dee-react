@@ -1993,13 +1993,17 @@ button.reward-btn:not(:disabled):active { transform: translateY(3px); box-shadow
 .confirm-actions .btn { flex: 1; margin: 0; }
 
 /* ---------- game logo (GameLogo.jsx) ---------- */
-.game-logo { position: relative; width: 240px; aspect-ratio: 512 / 464; margin-bottom: 30px; }
+.game-logo { position: relative; width: 270px; display: flex; flex-direction: column; align-items: center; margin-bottom: 4px; }
+.game-logo-emblem { position: relative; width: 220px; aspect-ratio: 512 / 464; }
 .game-logo-art { position: relative; width: 100%; height: 100%; display: block; object-fit: contain; filter: drop-shadow(0 10px 14px rgba(74,52,35,0.25)); }
 .game-logo-title { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
-.game-logo-text { font-family: "Kanit", sans-serif; font-weight: 900; font-size: 74px; letter-spacing: 1px; }
-/* gloss = the same letters clipped to their top half */
+.game-logo-ldd { font-family: "Kanit", sans-serif; font-weight: 900; font-size: 120px; letter-spacing: 16px; }
+/* "SOIL QUEST" under the emblem, tucked up against the ribbon */
+.game-logo-word { position: relative; z-index: 2; width: 100%; height: auto; margin-top: -24px; overflow: visible;
+  filter: drop-shadow(0 6px 6px rgba(74,52,35,0.28)); }
+.game-logo-wordtext { font-family: "Kanit", sans-serif; font-weight: 900; font-size: 104px; letter-spacing: 1px; }
 .game-logo-badge {
-  position: absolute; left: 50%; bottom: -30px; transform: translateX(-50%) rotate(-3deg);
+  position: relative; margin-top: 10px; transform: rotate(-3deg);
   display: inline-flex; align-items: baseline; gap: 6px; padding: 3px 16px 5px; white-space: nowrap;
   border-radius: 999px; border: 3px solid #fff; color: #fff;
   background: linear-gradient(180deg, #FF9F5C, #EE6326); box-shadow: 0 4px 0 #A8411A, 0 8px 14px rgba(74,52,35,0.25);

@@ -232,7 +232,7 @@ export default function TrueFalseScreen({ careMethods, fertilizers, onRoundFinis
               <span className="yes">ถูก</span><small>หรือ</small><span className="no">ผิด?</span>
               <em>เอาตัวรอด</em>
             </h2>
-            <p>ตอบไปเรื่อยๆ ไม่จำกัดข้อ · ผิดหรือหมดเวลาเสีย 1 หัวใจ</p>
+            <p>ตอบไปเรื่อยๆ ไม่จำกัดข้อ · มี 3 หัวใจ · ผิดหรือหมดเวลาเสีย 1 หัวใจ</p>
           </div>
         </div>
         <div className="tf-chips">
