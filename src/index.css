@@ -1124,6 +1124,15 @@ button.btn:not(:disabled):active { transform: translateY(3px); }
   from { transform: translateY(0) rotate(-1.2deg); }
   to { transform: translateY(-7px) rotate(1.2deg); }
 }
+/* entrance hop: springs up from below and lands EXACTLY on mascotIdle's
+   starting pose (rotate -1.2deg), so the idle loop that follows continues
+   the motion instead of snapping into place */
+@keyframes mascotHop {
+  0% { opacity: 0; transform: translateY(26px) scale(0.7, 0.6) rotate(-1.2deg); }
+  45% { opacity: 1; transform: translateY(-14px) scale(0.96, 1.06) rotate(-1.2deg); }
+  70% { transform: translateY(2px) scale(1.04, 0.95) rotate(-1.2deg); }
+  100% { opacity: 1; transform: translateY(0) rotate(-1.2deg); }
+}
 /* ---------- sticker speech bubble (SpeechBubble.jsx) ---------- */
 .speech-bubble {
   position: relative; background: #fff; color: var(--soil-dark);
@@ -2457,7 +2466,7 @@ button.reward-btn:not(:disabled):active { transform: translateY(3px); box-shadow
 /* level-start popup (LevelIntroModal.jsx) */
 .level-intro .welcome-hero { top: -84px; }
 .level-intro-soil { position: relative; display: block; width: 168px; height: 168px; margin: 0 auto; object-fit: contain;
-  filter: drop-shadow(0 10px 12px rgba(74,52,35,0.3)); animation: mascotHop 0.55s ease-out 0.2s both, mascotIdle 2.2s ease-in-out 0.8s infinite alternate; }
+  filter: drop-shadow(0 10px 12px rgba(74,52,35,0.3)); animation: mascotHop 0.55s ease-out 0.25s both, mascotIdle 2.2s ease-in-out 0.8s infinite alternate; }
 .level-intro-num { margin: 0 0 4px; font-size: calc(12px * var(--text-scale)); font-weight: 800; color: var(--soil-mid); letter-spacing: 0.04em; }
 .intro-card .level-intro-lead { margin: 0 0 10px; font-size: calc(15px * var(--text-scale)); line-height: 1.6; color: var(--soil-dark); }
 .level-intro-soilname { display: inline-block; margin-top: 2px; padding: 3px 14px; border-radius: 12px; font-size: calc(17px * var(--text-scale)); font-weight: 900;
@@ -2705,7 +2714,7 @@ button.reward-btn:not(:disabled):active { transform: translateY(3px); box-shadow
   -webkit-mask: radial-gradient(circle, #000 25%, transparent 68%); mask: radial-gradient(circle, #000 25%, transparent 68%);
   animation: sunburstSpin 18s linear infinite;
 }
-.bonus-hero .art-shine { animation: mascotHop 0.55s ease-out 0.1s both; }
+.bonus-hero .art-shine { transform-origin: 50% 100%; animation: mascotHop 0.55s ease-out 0.1s both, mascotIdle 1.8s ease-in-out 0.65s infinite alternate; }
 .bonus-card h2 { margin: 2px 0 6px !important; font-size: calc(20px * var(--text-scale)) !important; font-weight: 900 !important; }
 .bonus-amount {
   display: inline-flex; align-items: center; gap: 6px; margin: 0 0 10px; padding: 6px 18px 6px 10px; border-radius: 999px;
