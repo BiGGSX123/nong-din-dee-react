@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { makeRound, moreQuestions, TF_ROUND_SIZE, TF_LEVELS, TF_LEVEL_IDS, answerPoints, roundPoints } from '../lib/tfQuestions';
-import { playCorrect, playWrong, playHarvestPass, playHarvestFail, playUnlock } from '../lib/sound';
+import { playCorrect, playWrong, playHarvestPass, playHarvestFail, playPowerUp } from '../lib/sound';
 import ItemBar from '../components/ItemBar';
 import { TIME_BONUS_MS } from '../data/shopItems';
 import StarIcon from '../components/StarIcon';
@@ -109,7 +109,7 @@ export default function TrueFalseScreen({ careMethods, fertilizers, onRoundFinis
     if (answered || !onUseItem) return;
     onUseItem(itemId, 'tf').then((ok) => {
       if (!ok) return;
-      playUnlock();
+      playPowerUp();
       if (itemId === 'time') {
         armTimer(Math.max(0, deadlineRef.current - Date.now()) + TIME_BONUS_MS);
         setTimeFlash((n) => n + 1);
@@ -124,8 +124,8 @@ export default function TrueFalseScreen({ careMethods, fertilizers, onRoundFinis
     const ok = value === q.answer;
     setResults((r) => [...r, ok]);
     if (ok) {
-      playCorrect();
       const n = streak + 1;
+      playCorrect(n);
       setStreak(n);
       setBestStreak((b) => Math.max(b, n));
       setGain({ pts: answerPoints(n, mode), streak: n });

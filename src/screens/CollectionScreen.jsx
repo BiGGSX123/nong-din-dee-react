@@ -3,7 +3,7 @@ import { CROPS, SOIL } from '../data/content';
 import { CHARACTERS, dailyBonusOf } from '../data/characters';
 import CharPortrait from '../components/CharPortrait';
 import Sparkles from '../components/Sparkles';
-import { playHarvestPass } from '../lib/sound';
+import { playCoinShower } from '../lib/sound';
 
 // a hand-stuck look: each sticker gets its own small fixed tilt (stable per
 // slot, so it doesn't jiggle between renders)
@@ -34,7 +34,7 @@ export default function CollectionScreen({ levels, levelStatus, characters = [],
     if (claiming) return;
     setClaiming(true);
     onClaimDaily()
-      .then((pts) => { playHarvestPass(); setClaimMsg(`ได้รับ +${pts} เหรียญ!`); })
+      .then((pts) => { playCoinShower(); setClaimMsg(`ได้รับ +${pts} เหรียญ!`); })
       .catch(() => setClaimMsg(null))
       .finally(() => setClaiming(false));
   }

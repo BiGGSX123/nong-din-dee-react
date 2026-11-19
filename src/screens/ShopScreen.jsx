@@ -6,7 +6,7 @@ import { SHOP_ITEMS } from '../data/shopItems';
 import { CHARACTERS } from '../data/characters';
 import CharPortrait from '../components/CharPortrait';
 import Sparkles from '../components/Sparkles';
-import { playUnlock, playWrong } from '../lib/sound';
+import { playPurchase, playDenied } from '../lib/sound';
 
 const MODE_LABEL = { map: 'ด่านผจญภัย', tf: 'ถูก หรือ ผิด' };
 
@@ -32,11 +32,11 @@ export default function ShopScreen({ points, inventory, onBuy, isLoggedIn, chara
     setBusy(ch.id);
     onBuyCharacter(ch.id)
       .then((bonus) => {
-        playUnlock();
+        playPurchase();
         setFlash({ id: ch.id, ok: true, n: Date.now() });
         if (bonus > 0) setWelcome({ ch, bonus });
       })
-      .catch(() => { playWrong(); setFlash({ id: ch.id, ok: false, msg: 'ซื้อไม่สำเร็จ ลองใหม่อีกครั้ง' }); })
+      .catch(() => { playDenied(); setFlash({ id: ch.id, ok: false, msg: 'ซื้อไม่สำเร็จ ลองใหม่อีกครั้ง' }); })
       .finally(() => setBusy(null));
   }
 
@@ -44,8 +44,8 @@ export default function ShopScreen({ points, inventory, onBuy, isLoggedIn, chara
     if (busy) return;
     setBusy(item.id);
     onBuy(item.id)
-      .then(() => { playUnlock(); setFlash({ id: item.id, ok: true, n: Date.now() }); })
-      .catch(() => { playWrong(); setFlash({ id: item.id, ok: false, msg: 'ซื้อไม่สำเร็จ ลองใหม่อีกครั้ง' }); })
+      .then(() => { playPurchase(); setFlash({ id: item.id, ok: true, n: Date.now() }); })
+      .catch(() => { playDenied(); setFlash({ id: item.id, ok: false, msg: 'ซื้อไม่สำเร็จ ลองใหม่อีกครั้ง' }); })
       .finally(() => setBusy(null));
   }
 
@@ -128,7 +128,7 @@ export default function ShopScreen({ points, inventory, onBuy, isLoggedIn, chara
             <span className="reward-ribbon">ของจริง!</span>
             <img className="reward-art" src={r.img} alt="" />
             <h3>{r.name}</h3>
-            <button type="button" className="reward-btn" onClick={() => { playWrong(); setSoldOut(r); }}>
+            <button type="button" className="reward-btn" onClick={() => { playDenied(); setSoldOut(r); }}>
               <span className="shop-price"><img src="/icons/shop/points.webp" alt="" />{r.price.toLocaleString()}</span>
               <span className="shop-buy-label">แลก</span>
             </button>

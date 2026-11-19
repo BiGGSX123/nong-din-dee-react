@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { playFirework } from '../lib/sound';
+import { playFirework, playFireworkLaunch } from '../lib/sound';
 
 // saturated hues only — pale/white sparks vanish against the game's cream background
 const COLORS = ['#FF3B5C', '#FF8A00', '#FFC300', '#2DB84C', '#1E9BF0', '#9B5CFF', '#FF4FA3'];
@@ -37,7 +37,7 @@ export default function Fireworks({ bursts = 6, startDelay = 0, opening = 0 }) {
     let running = false;
 
     const explode = (x, y, big) => {
-      playFirework();
+      playFirework({ big, pan: W ? Math.max(-0.8, Math.min(0.8, (x / W) * 2 - 1)) : 0 });
       const color = COLORS[Math.floor(Math.random() * COLORS.length)];
       const accent = COLORS[Math.floor(Math.random() * COLORS.length)];
       const n = big ? 80 : 58;
@@ -59,6 +59,7 @@ export default function Fireworks({ bursts = 6, startDelay = 0, opening = 0 }) {
     const launch = (i, xFrac) => {
       const x = W * (xFrac ?? 0.15 + Math.random() * 0.7);
       const targetY = H * (0.12 + Math.random() * 0.3);
+      playFireworkLaunch({ pan: W ? Math.max(-0.8, Math.min(0.8, (x / W) * 2 - 1)) * 0.7 : 0 });
       rockets.push({ x, y: xFrac == null ? H + 6 : H * 0.6, vx: (Math.random() - 0.5) * 0.8, vy: -(5.2 + Math.random() * 1.6), targetY, big: i % 3 === 2 });
       if (!running) { running = true; last = 0; raf = requestAnimationFrame(frame); }
     };

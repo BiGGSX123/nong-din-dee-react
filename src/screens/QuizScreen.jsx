@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { cropById } from '../data/content';
 import { getSuitabilityTier, CROP_FERT_CORRECT } from '../data/knowledge';
-import { playCorrect, playWrong, playUnlock } from '../lib/sound';
+import { playCorrect, playWrong, playPowerUp } from '../lib/sound';
 import ItemBar from '../components/ItemBar';
 import { careIcon, fertIcon } from '../lib/choiceIcons';
 import { TIME_BONUS_MS } from '../data/shopItems';
@@ -136,7 +136,7 @@ export default function QuizScreen({ level, levelNumber, soil, step, pickedCropI
     if (answered || !onUseItem) return;
     onUseItem(itemId, 'map').then((ok) => {
       if (!ok || answeredIdx !== null) return;
-      playUnlock();
+      playPowerUp();
       if (itemId === 'time') {
         armTimer(Math.max(0, deadlineRef.current - Date.now()) + TIME_BONUS_MS);
         setTimeFlash((n) => n + 1);
