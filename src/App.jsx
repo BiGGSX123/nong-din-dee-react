@@ -13,6 +13,7 @@ import Hud from './components/Hud';
 import NavBar from './components/NavBar';
 import IntroModal from './components/IntroModal';
 import LoadingScreen from './components/LoadingScreen';
+import { preloadCritical, preloadRest } from './lib/preload';
 import LevelIntroModal from './components/LevelIntroModal';
 import { rankOf } from './lib/rank';
 import SettingsModal from './components/SettingsModal';
@@ -42,7 +43,7 @@ const POINTS_PER_STAR = 20;
 const SPEED_BONUS_MAX = 40;
 
 export default function App() {
-  const [config, reloadConfig, setConfigLocal] = useGameConfig();
+  const [config, reloadConfig, setConfigLocal, configError] = useGameConfig();
   const {
     player, serverProgress, loading: sessionLoading, isLoggedIn, saveProgress,
     loginError, retryLogin, setHomeProvince, needsLogin, loginWithLine, saveQuickQuiz, buyItem, spendItem, buyCharacter, claimDailyBonus,
@@ -178,24 +179,32 @@ export default function App() {
     setOnboardingStep(isFirstTime ? 'welcome' : null);
   }, [sessionLoading, isLoggedIn, player]);
 
+  // asset preloading (lib/preload.js): first-screen art starts downloading
+  // now, while the loading screen waits for LINE + game data anyway; the rest
+  // trickles in quietly once the game is on screen
+  useEffect(() => { preloadCritical(); }, []);
+  const gameReady = Boolean(config && levelStatus && !sessionLoading && !needsLogin && !loginError);
+  useEffect(() => {
+    if (!gameReady) return undefined;
+    const t = setTimeout(preloadRest, 1500);
+    return () => clearTimeout(t);
+  }, [gameReady]);
+
+  // every startup path ends in the game, the login button, or an error with
+  // a retry — never an endless spinner
+  if (loginError) {
+    return <LoadingScreen error={`เข้าสู่ระบบด้วย LINE ไม่สำเร็จ — ${loginError}`} onRetry={retryLogin} retryLabel="ลองเข้าสู่ระบบอีกครั้ง" />;
+  }
   // LINE login is on but this player hasn't logged in yet: login button on
   // the loading screen (inside the LINE app they're logged in automatically)
   if (needsLogin) return <LoadingScreen onLogin={loginWithLine} />;
+  if (configError && !config) {
+    return <LoadingScreen error="โหลดข้อมูลเกมไม่สำเร็จ ตรวจสอบอินเทอร์เน็ตแล้วลองใหม่" onRetry={() => window.location.reload()} />;
+  }
   if (!config || !levelStatus || sessionLoading) return <LoadingScreen />;
 
   // LINE login is required once configured — no playable guest fallback on
   // failure, so a broken login shows this instead of silently entering the game
-  if (loginError) {
-    return (
-      <div className="phone">
-        <div className="screen" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14, textAlign: 'center', padding: 24 }}>
-          <p>เข้าสู่ระบบด้วย LINE ไม่สำเร็จ<br /><span style={{ opacity: 0.7, fontSize: 12.5 }}>{loginError}</span></p>
-          <button className="btn" type="button" onClick={retryLogin}>ลองเข้าสู่ระบบอีกครั้ง</button>
-        </div>
-      </div>
-    );
-  }
-
   const completedCount = levelStatus.filter((s) => s.completed && s.stars > 0).length; // passed = at least 1 star
   // the admin tab stays hidden from regular players — it only appears for a
   // logged-in account with role === 'admin' (server enforces this too on every

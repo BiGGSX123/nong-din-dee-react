@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { api } from '../lib/api';
+import { api, reportClientIssue } from '../lib/api';
 
 // game content (levels, care methods, fertilizers) now lives in the shared
 // database instead of per-browser localStorage — every player reads the same rows
@@ -8,7 +8,13 @@ export function useGameConfig() {
   const [error, setError] = useState(null);
 
   const reload = useCallback(() => {
-    return api.getConfig()
+    // a phone on a flaky connection: try up to 3 times (1s, 2s backoff)
+    // before surfacing the error (App shows it with a retry button)
+    const attempt = (n) => api.getConfig().catch((e) => {
+      if (n >= 2) throw e;
+      return new Promise((r) => setTimeout(r, 1000 * (n + 1))).then(() => attempt(n + 1));
+    });
+    return attempt(0)
       .then((data) => {
         // the rest of the app (ported from the old localStorage shape) keys
         // levels by `id` — the server's row key is `index`, so alias it —
@@ -18,7 +24,7 @@ export function useGameConfig() {
         setConfig({ ...data, levels, careMethods });
         setError(null);
       })
-      .catch((e) => setError(e.message));
+      .catch((e) => { reportClientIssue('load-config', e); setError(e.message || 'load failed'); });
   }, []);
 
   useEffect(() => { reload(); }, [reload]);

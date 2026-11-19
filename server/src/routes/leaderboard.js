@@ -3,14 +3,31 @@ import { prisma } from '../db.js';
 
 export const leaderboardRouter = Router();
 
+// spendable points + everything already spent in the shop = total ever
+// earned. (Spending only exists since the PointLog ledger did, so `spent` is
+// complete; summing earned entries instead would miss pre-ledger points.)
+async function spentByPlayer() {
+  const rows = await prisma.pointLog.groupBy({ by: ['playerId'], where: { amount: { lt: 0 } }, _sum: { amount: true } });
+  return new Map(rows.map((r) => [r.playerId, -(r._sum.amount ?? 0)]));
+}
+export async function totalEarned(playerId, points) {
+  const agg = await prisma.pointLog.aggregate({ where: { playerId, amount: { lt: 0 } }, _sum: { amount: true } });
+  return points - (agg._sum.amount ?? 0);
+}
+
+// GET /api/leaderboard — "จัดอันดับผู้เล่น": ranked by total points EARNED
+// (not the remaining balance, so buying items/characters doesn't drop you)
 leaderboardRouter.get('/', async (req, res) => {
   const limit = Math.min(Number(req.query.limit) || 100, 500);
-  const players = await prisma.player.findMany({
-    orderBy: { points: 'desc' },
-    take: limit,
-    select: { id: true, displayName: true, pictureUrl: true, points: true },
-  });
-  res.json({ players });
+  const [players, spent] = await Promise.all([
+    prisma.player.findMany({ select: { id: true, displayName: true, pictureUrl: true, points: true } }),
+    spentByPlayer(),
+  ]);
+  const rows = players
+    .map((p) => ({ ...p, earned: p.points + (spent.get(p.id) ?? 0) }))
+    .sort((a, b) => b.earned - a.earned || b.points - a.points)
+    .slice(0, limit);
+  res.json({ players: rows });
 });
 
 // GET /api/leaderboard/stars — "อันดับดวงดาว": most map stars first; ties go

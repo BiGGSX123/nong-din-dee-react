@@ -64,7 +64,8 @@ export default function RankingScreen({ player, isLoggedIn, points, completedCou
       .then(({ players }) => {
         if (cancelled) return;
         setLiveBoard(players.map((p) => ({
-          name: p.displayName, pts: p.points, avatar: p.pictureUrl, me: p.id === player.id,
+          // ranked by total points ever earned (not the spendable balance)
+          name: p.displayName, pts: p.earned ?? p.points, avatar: p.pictureUrl, me: p.id === player.id,
         })));
       })
       .catch(() => { if (!cancelled) setLoadError(true); });
@@ -195,7 +196,9 @@ export default function RankingScreen({ player, isLoggedIn, points, completedCou
                 <StarIcon filled />อันดับดวงดาว
               </button>
             </div>
-            {isStars && <p className="arena-rule">ดาวมากสุดก่อน · ดาวเท่ากันดูคะแนนรวมแผนที่ · ยังเท่ากันดูแต้ม</p>}
+            <p className="arena-rule">{isStars
+              ? 'ดาวมากสุดก่อน · ดาวเท่ากันดูคะแนนรวมแผนที่ · ยังเท่ากันดูแต้ม'
+              : 'เรียงตามแต้มที่ได้รับทั้งหมด (ไม่หักแต้มที่ใช้ไป)'}</p>
             <div className="podium">
               {DISPLAY_ORDER.filter((i) => podium[i]).map((i) => {
                 const p = podium[i];
@@ -213,7 +216,7 @@ export default function RankingScreen({ player, isLoggedIn, points, completedCou
                       </div>
                       <div className="podium-name"><span>{p.name}</span>{p.me && <span className="me-tag">คุณ</span>}</div>
                       <div className={`podium-pts ${isStars ? 'stars' : ''}`}>{metric(p)}</div>
-                      {isStars && <div className="podium-sub">แผนที่ {p.mapScore.toLocaleString()} · {p.pts.toLocaleString()} แต้ม</div>}
+                      {isStars && <div className="podium-sub">{p.pts.toLocaleString()} แต้ม</div>}
                     </div>
                     <div className="podium-block" aria-hidden="true"><span className="podium-num">{rank}</span></div>
                   </div>

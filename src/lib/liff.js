@@ -17,14 +17,38 @@ function isJwtExpired(token) {
   }
 }
 
+// liff.init must only run once per page — every caller shares this promise
+// (it's reset on failure so a retry can try again)
+let liffReady = null;
+function getLiff() {
+  if (!liffReady) {
+    liffReady = import('@line/liff').then(async ({ default: liff }) => {
+      await liff.init({ liffId: import.meta.env.VITE_LIFF_ID });
+      return liff;
+    });
+    liffReady.catch(() => { liffReady = null; });
+  }
+  return liffReady;
+}
+
+// rejects with { timeout: true, stage } if `promise` takes longer than `ms`
+// — so a hung network call (e.g. a network that blocks api.line.me) ends in
+// an error screen instead of an endless loading spinner
+export function withTimeout(promise, ms, stage) {
+  let timer;
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(Object.assign(new Error(`${stage} timed out after ${ms / 1000}s`), { timeout: true, stage })), ms);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+}
+
 // resolves to a LIFF ID token to hand to POST /api/auth/line, or null in guest
 // mode / when the player still has to log in — the loading screen then shows
 // a "เข้าสู่ระบบด้วย LINE" button that calls startLiffLogin(). (Inside the LINE
 // app LIFF is already logged in, so players there never see the button.)
 export async function initLiffAndGetIdToken() {
   if (!isLiffEnabled()) return null;
-  const { default: liff } = await import('@line/liff');
-  await liff.init({ liffId: import.meta.env.VITE_LIFF_ID });
+  const liff = await getLiff();
   if (!liff.isLoggedIn()) return null;
   const idToken = liff.getIDToken();
   if (!idToken || isJwtExpired(idToken)) {
@@ -44,8 +68,7 @@ export async function initLiffAndGetIdToken() {
 
 // the login button: redirect to LINE's login page (comes back to this page)
 export async function startLiffLogin() {
-  const { default: liff } = await import('@line/liff');
-  try { await liff.init({ liffId: import.meta.env.VITE_LIFF_ID }); } catch { /* already initialized */ }
+  const liff = await withTimeout(getLiff(), 15000, 'liff-init');
   liff.login(); // redirects; execution stops here for this page load
 }
 
@@ -54,8 +77,7 @@ export async function startLiffLogin() {
 // so a broken step bounces back to LINE instead of silently falling through
 // to an unauthenticated app
 export async function forceLiffLogin() {
-  const { default: liff } = await import('@line/liff');
-  try { await liff.init({ liffId: import.meta.env.VITE_LIFF_ID }); } catch { /* may already be initialized */ }
+  const liff = await withTimeout(getLiff(), 15000, 'liff-init');
   // logout first — see the comment in initLiffAndGetIdToken(): if LIFF still
   // considers the session logged in, login() alone does nothing and the
   // caller would keep getting the same stale/expired ID token back.

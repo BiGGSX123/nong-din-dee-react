@@ -11,14 +11,20 @@ const LineMark = () => (
 
 // first thing on screen: the game logo over a light burst. While data loads it
 // shows a loading bar; when LINE login is needed (onLogin given) it shows the
-// "เข้าสู่ระบบด้วย LINE" button instead.
-export default function LoadingScreen({ onLogin }) {
+// "เข้าสู่ระบบด้วย LINE" button instead; on a failure (error given) it shows the
+// message and a retry button.
+export default function LoadingScreen({ onLogin, error, onRetry, retryLabel = 'ลองใหม่' }) {
   const [going, setGoing] = useState(false);
   return (
     <div className="phone">
       <div className={`loading-screen ${onLogin ? 'needs-login' : ''}`}>
         <GameLogo className="loading-logo" rays />
-        {onLogin ? (
+        {error ? (
+          <div className="login-box load-error" role="alert">
+            <p>{error}</p>
+            {onRetry && <button type="button" className="btn load-retry" onClick={onRetry}>{retryLabel}</button>}
+          </div>
+        ) : onLogin ? (
           <div className="login-box">
             <p>เข้าสู่ระบบเพื่อเก็บแต้ม อันดับ<br />และ แลกของรางวัลต่างๆ</p>
             <button

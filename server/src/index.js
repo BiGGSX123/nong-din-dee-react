@@ -10,6 +10,7 @@ import { playerRouter } from './routes/player.js';
 import { quickQuizRouter } from './routes/quickQuiz.js';
 import { shopRouter } from './routes/shop.js';
 import { charactersRouter } from './routes/characters.js';
+import { clientLogRouter } from './routes/clientLog.js';
 import { scheduleDailyBonus } from './cron/dailyBonus.js';
 
 const app = express();
@@ -27,6 +28,7 @@ app.use('/api/player', playerRouter);
 app.use('/api/quick-quiz', quickQuizRouter);
 app.use('/api/shop', shopRouter);
 app.use('/api/characters', charactersRouter);
+app.use('/api/client-log', clientLogRouter);
 
 scheduleDailyBonus();
 

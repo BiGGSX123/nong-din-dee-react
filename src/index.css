@@ -2681,3 +2681,7 @@ button.reward-btn:not(:disabled):active { transform: translateY(3px); box-shadow
   .map-progress-bar i::before, .loading-screen .loading-bar span::before,
   .pf-wallet::before, .quiz-board-list li::after { animation: none; }
 }
+
+/* loading screen: failure message + retry (never an endless spinner) */
+.load-error p { color: #8A3A1E; }
+.load-retry { width: auto; min-width: 200px; padding: 12px 24px; margin: 0; font-size: calc(16px * var(--text-scale)); font-weight: 800; border-radius: 16px; }

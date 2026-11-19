@@ -28,3 +28,9 @@ function match(rules, text, dir) {
 
 export const careIcon = (text) => match(CARE_RULES, text, 'care');
 export const fertIcon = (fert) => match(FERT_RULES, `${fert?.label || ''} ${fert?.sub || ''}`, 'fert');
+
+// every icon these rules can produce — used by the preloader
+export const CHOICE_ICON_URLS = [
+  ...CARE_RULES.map(([, id]) => `/icons/care/${id}.webp`),
+  ...FERT_RULES.map(([, id]) => `/icons/fert/${id}.webp`),
+];

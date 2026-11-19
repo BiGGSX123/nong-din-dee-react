@@ -59,7 +59,7 @@ export default function QuizLeaderboard({ playerId, refreshKey }) {
           );
         })}
       </div>
-      <p className="quiz-board-rule">คะแนนรอบที่ดีที่สุด (รวมไอเทม x2) · เท่ากันดูคอมโบ</p>
+      <p className="quiz-board-rule">คะแนนรอบที่ดีที่สุด</p>
 
       {loading ? (
         <div className="quiz-board-empty">กำลังโหลดอันดับ...</div>

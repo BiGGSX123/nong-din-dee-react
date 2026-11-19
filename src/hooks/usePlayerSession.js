@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
-import { api } from '../lib/api';
-import { isLiffEnabled, initLiffAndGetIdToken, forceLiffLogin, startLiffLogin } from '../lib/liff';
+import { api, reportClientIssue } from '../lib/api';
+import { isLiffEnabled, initLiffAndGetIdToken, forceLiffLogin, startLiffLogin, withTimeout } from '../lib/liff';
+
+// how long LINE's own startup (liff.init + token) may take before we give up
+// and show an error with a retry button instead of spinning forever
+const LIFF_TIMEOUT_MS = 15000;
 
 // guest mode (no VITE_LIFF_ID configured): player stays null, nothing is
 // persisted server-side, and the app behaves exactly like the old
@@ -20,11 +24,14 @@ export function usePlayerSession() {
   useEffect(() => {
     if (!isLiffEnabled()) return;
     let cancelled = false;
+    let redirecting = false; // bouncing to LINE: keep the loading screen up
+    let stage = 'liff-init';
     (async () => {
       try {
-        const idToken = await initLiffAndGetIdToken();
+        const idToken = await withTimeout(initLiffAndGetIdToken(), LIFF_TIMEOUT_MS, 'liff-init');
         if (cancelled) return;
         if (!idToken) { setNeedsLogin(true); return; }
+        stage = 'server-login';
         const { player: loggedInPlayer } = await api.loginWithLine(idToken);
         if (cancelled) return;
         try { sessionStorage.removeItem(RETRY_FLAG_KEY); } catch { /* storage unavailable */ }
@@ -32,7 +39,16 @@ export function usePlayerSession() {
         setServerProgress(loggedInPlayer.progress || []);
       } catch (e) {
         console.error('LINE login failed', e);
+        reportClientIssue(e?.stage || stage, e);
         if (cancelled) return;
+        // a timeout means the network can't reach LINE / our server — bouncing
+        // back to LINE won't fix that, so go straight to the error + retry
+        if (e?.timeout) {
+          setLoginError(stage === 'server-login'
+            ? 'เชื่อมต่อเซิร์ฟเวอร์เกมช้าเกินไป ลองใหม่อีกครั้ง หรือเปลี่ยนเครือข่าย (Wi-Fi / เน็ตมือถือ)'
+            : 'เชื่อมต่อ LINE ช้าเกินไป ลองใหม่อีกครั้ง หรือเปลี่ยนเครือข่าย (Wi-Fi / เน็ตมือถือ)');
+          return;
+        }
         // once configured, this build requires LINE login — no silent guest
         // fallback. Bounce back to LINE once; if it fails again right after
         // a fresh redirect, stop looping and show an explicit error instead
@@ -40,18 +56,31 @@ export function usePlayerSession() {
         try { alreadyRetried = sessionStorage.getItem(RETRY_FLAG_KEY) === '1'; } catch { /* storage unavailable */ }
         if (!alreadyRetried) {
           try { sessionStorage.setItem(RETRY_FLAG_KEY, '1'); } catch { /* storage unavailable */ }
-          forceLiffLogin(); // redirects away; execution stops here
+          redirecting = true;
+          forceLiffLogin().catch((err) => {
+            // couldn't even start the redirect — show the error instead
+            reportClientIssue('force-login', err);
+            redirecting = false;
+            setLoginError(err?.message || 'เข้าสู่ระบบด้วย LINE ไม่สำเร็จ');
+            setLoading(false);
+          });
           return;
         }
         setLoginError(e.message || 'เข้าสู่ระบบด้วย LINE ไม่สำเร็จ');
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled && !redirecting) setLoading(false);
       }
     })();
     return () => { cancelled = true; };
   }, []);
 
-  const loginWithLine = useCallback(() => startLiffLogin(), []);
+  const loginWithLine = useCallback(() => startLiffLogin().catch((e) => {
+    reportClientIssue('login-button', e);
+    setLoginError(e?.timeout
+      ? 'เชื่อมต่อ LINE ช้าเกินไป ลองใหม่อีกครั้ง หรือเปลี่ยนเครือข่าย (Wi-Fi / เน็ตมือถือ)'
+      : (e?.message || 'เข้าสู่ระบบด้วย LINE ไม่สำเร็จ'));
+    throw e;
+  }), []);
 
   const retryLogin = useCallback(() => {
     try { sessionStorage.removeItem(RETRY_FLAG_KEY); } catch { /* storage unavailable */ }

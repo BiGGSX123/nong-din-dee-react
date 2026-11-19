@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { prisma } from '../db.js';
 import { requireAuth } from '../auth.js';
+import { totalEarned } from './leaderboard.js';
 
 export const playerRouter = Router();
 
@@ -26,7 +27,7 @@ playerRouter.put('/home-province', requireAuth, async (req, res) => {
 playerRouter.get('/history', requireAuth, async (req, res) => {
   const limit = Math.min(Math.max(Number(req.query.limit) || 60, 1), 200);
   const where = { playerId: req.playerId };
-  const [entries, earned, spent] = await prisma.$transaction([
+  const [entries, , spent] = await prisma.$transaction([
     prisma.pointLog.findMany({
       where, orderBy: { createdAt: 'desc' }, take: limit,
       select: { id: true, amount: true, kind: true, ref: true, createdAt: true },
@@ -34,5 +35,8 @@ playerRouter.get('/history', requireAuth, async (req, res) => {
     prisma.pointLog.aggregate({ where: { ...where, amount: { gt: 0 } }, _sum: { amount: true } }),
     prisma.pointLog.aggregate({ where: { ...where, amount: { lt: 0 } }, _sum: { amount: true } }),
   ]);
-  res.json({ entries, earned: earned._sum.amount ?? 0, spent: -(spent._sum.amount ?? 0) });
+  // "ได้รับทั้งหมด" = balance + spent (same as the leaderboard), so it also
+  // counts points earned before the ledger existed
+  const me = await prisma.player.findUnique({ where: { id: req.playerId }, select: { points: true } });
+  res.json({ entries, earned: await totalEarned(req.playerId, me?.points ?? 0), spent: -(spent._sum.amount ?? 0) });
 });
