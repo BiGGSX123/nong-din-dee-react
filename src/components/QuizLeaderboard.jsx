@@ -4,7 +4,8 @@ import { TF_LEVELS, TF_ROUND_SIZE } from '../lib/tfQuestions';
 
 // "ถูกหรือผิด?" leaderboard — its own card on the ranking screen, separate
 // from the main points/stars arena. One tab per mode; ranked by the best
-// round score (x2 item included), ties → longest combo → who got it first.
+// round score (x2 item included), ties → longest combo → older account.
+// Players without a record in the mode are still listed (score 0) below.
 const MODES = ['easy', 'medium', 'hard', 'survival'];
 const MEDALS = ['gold', 'silver', 'bronze'];
 
@@ -37,6 +38,8 @@ export default function QuizLeaderboard({ playerId, refreshKey }) {
   const loading = !result || result.mode !== mode;
   const rows = !loading && !result.error ? result.players : [];
   const myIdx = rows.findIndex((r) => r.id === playerId);
+  const anyRecord = rows.some((r) => r.hasRecord);
+  const iHaveRecord = myIdx >= 0 && rows[myIdx].hasRecord;
   const lv = TF_LEVELS[mode];
 
   return (
@@ -65,12 +68,15 @@ export default function QuizLeaderboard({ playerId, refreshKey }) {
         <div className="quiz-board-empty">กำลังโหลดอันดับ...</div>
       ) : result.error ? (
         <div className="quiz-board-empty">โหลดอันดับไม่สำเร็จ</div>
-      ) : rows.length === 0 ? (
-        <div className="quiz-board-empty">ยังไม่มีใครทำสถิติใน{lv.survival ? 'โหมด' : 'ระดับ'}{lv.label} เป็นคนแรกเลย!</div>
       ) : (
+        <>
+          {!anyRecord && (
+            <div className="quiz-board-empty">ยังไม่มีใครทำสถิติใน{lv.survival ? 'โหมด' : 'ระดับ'}{lv.label} เป็นคนแรกเลย!</div>
+          )}
+          {rows.length > 0 && (
         <ol className="quiz-board-list">
           {rows.map((r, i) => (
-            <li key={r.id} className={`${MEDALS[i] || ''} ${r.id === playerId ? 'me' : ''}`}>
+            <li key={r.id} className={`${MEDALS[i] || ''} ${r.hasRecord ? '' : 'no-record'} ${r.id === playerId ? 'me' : ''}`}>
               <span className="qb-rank">{i + 1}</span>
               <span className="qb-avatar-wrap">
                 {i === 0 && <MiniCrown />}
@@ -80,17 +86,21 @@ export default function QuizLeaderboard({ playerId, refreshKey }) {
               </span>
               <span className="qb-name">
                 <span className="qb-name-row">{r.displayName}{r.id === playerId && <span className="me-tag">คุณ</span>}</span>
-                <small>
-                  {lv.survival ? `รอด ${r.correct} ข้อ` : `ถูก ${r.correct}/${TF_ROUND_SIZE}`}
-                  {' · '}<img src="/icons/shop/combo.webp" alt="" />คอมโบ {r.combo}
-                </small>
+                {r.hasRecord ? (
+                  <small>
+                    {lv.survival ? `รอด ${r.correct} ข้อ` : `ถูก ${r.correct}/${TF_ROUND_SIZE}`}
+                    {' · '}<img src="/icons/shop/combo.webp" alt="" />คอมโบ {r.combo}
+                  </small>
+                ) : <small>ยังไม่มีสถิติ</small>}
               </span>
               <span className="qb-score"><b>{r.score.toLocaleString()}</b>คะแนน</span>
             </li>
           ))}
         </ol>
+          )}
+        </>
       )}
-      {!loading && !result.error && rows.length > 0 && myIdx < 0 && (
+      {!loading && !result.error && anyRecord && playerId && !iHaveRecord && (
         <div className="quiz-board-hint">คุณยังไม่มีสถิติใน{lv.survival ? 'โหมด' : 'ระดับ'}{lv.label} — ไปเล่นถูก หรือ ผิด เพื่อติดอันดับ!</div>
       )}
     </section>

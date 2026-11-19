@@ -75,6 +75,7 @@ export default function App() {
   }, [levels, playOrder]);
 
   const [screen, setScreen] = useState('level-select');
+  const [focusDaily, setFocusDaily] = useState(false); // collection opened via "ไปรับเลย"
   // 'welcome' -> 'province' (only if logged in with no home province yet) ->
   // 'confirmed' (only after actually saving one) -> null (onboarding done).
   // Starts null (undecided) rather than 'welcome' — whether this is a first
@@ -644,9 +645,9 @@ export default function App() {
       />
     );
   } else if (screen === 'ranking') {
-    content = <RankingScreen player={player} isLoggedIn={isLoggedIn} points={points} completedCount={completedCount} totalLevels={levels.length} totalStars={levelStatus.reduce((sum, st) => sum + (st.stars || 0), 0)} characterCount={characters.length} charDailyBonus={dailyBonusOf(characters)} claimedToday={dailyPending === 0} />;
+    content = <RankingScreen player={player} isLoggedIn={isLoggedIn} points={points} completedCount={completedCount} totalLevels={levels.length} totalStars={levelStatus.reduce((sum, st) => sum + (st.stars || 0), 0)} characterCount={characters.length} charDailyBonus={dailyBonusOf(characters)} claimedToday={dailyPending === 0} onOpenCollection={() => { setFocusDaily(true); setScreen('collection'); }} />;
   } else if (screen === 'collection') {
-    content = <CollectionScreen levels={levels} levelStatus={levelStatus} characters={characters} dailyPending={dailyPending} newStickerIds={newStickerIds} onStickersSeen={markStickersSeen} onClaimDaily={handleClaimDaily} onOpenShop={() => setScreen('shop')} />;
+    content = <CollectionScreen levels={levels} levelStatus={levelStatus} characters={characters} dailyPending={dailyPending} newStickerIds={newStickerIds} onStickersSeen={markStickersSeen} onClaimDaily={handleClaimDaily} onOpenShop={() => setScreen('shop')} focusDaily={focusDaily} onFocusDone={() => setFocusDaily(false)} />;
   } else if (screen === 'knowledge') {
     content = <KnowledgeScreen careMethods={careMethods} fertilizers={fertilizers} />;
   } else if (screen === 'true-false') {

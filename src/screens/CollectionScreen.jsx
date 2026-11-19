@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CROPS, SOIL } from '../data/content';
 import { CHARACTERS, dailyBonusOf } from '../data/characters';
 import CharPortrait from '../components/CharPortrait';
@@ -9,12 +9,21 @@ import { playHarvestPass } from '../lib/sound';
 // slot, so it doesn't jiggle between renders)
 const tilt = (i) => `${((i * 37) % 9) - 4}deg`;
 
-export default function CollectionScreen({ levels, levelStatus, characters = [], dailyPending = 0, newStickerIds = [], onStickersSeen, onClaimDaily, onOpenShop }) {
+export default function CollectionScreen({ levels, levelStatus, characters = [], dailyPending = 0, newStickerIds = [], onStickersSeen, onClaimDaily, onOpenShop, focusDaily = false, onFocusDone }) {
   // stickers that are new on THIS visit: snapshot on open (they keep their
   // NEW badge + pop-in while you look), then mark everything seen right away
   // so the nav dot clears and next visit they're ordinary stickers
   const [fresh] = useState(() => new Set(newStickerIds));
   useEffect(() => { onStickersSeen?.(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  // opened from "ไปรับเลย" on the ranking page: bring the daily-claim card
+  // into view (the page otherwise keeps the old scroll position) + nudge it
+  const dailyRef = useRef(null);
+  const [nudge] = useState(focusDaily);
+  useEffect(() => {
+    if (!focusDaily) return;
+    dailyRef.current?.scrollIntoView({ block: 'center' });
+    onFocusDone?.();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   let popOrder = 0;
   const freshProps = (id) => (fresh.has(id) ? { isNew: true, delay: popOrder++ * 0.12 } : {});
   const [claiming, setClaiming] = useState(false);
@@ -48,7 +57,7 @@ export default function CollectionScreen({ levels, levelStatus, characters = [],
         <div className="album-progress-bar"><i style={{ width: `${(found / total) * 100}%` }} /></div>
       </div>
 
-      <section className={`daily-card ${characters.length && dailyPending <= 0 ? 'done' : ''}`}>
+      <section ref={dailyRef} className={`daily-card ${characters.length && dailyPending <= 0 ? 'done' : ''} ${nudge ? 'nudge' : ''}`}>
         <div className="daily-chars" aria-hidden="true">
           {(characters.length ? CHARACTERS.filter((c) => characters.includes(c.id)) : CHARACTERS.slice(0, 3)).slice(0, 4).map((c) => (
             <CharPortrait key={c.id} ch={c} size={96} locked={!characters.length} variant="sticker" />

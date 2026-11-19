@@ -35,7 +35,7 @@ const Crown = () => (
 // progress ring geometry (r=52 in a 120 box)
 const RING_C = 2 * Math.PI * 52;
 
-export default function RankingScreen({ player, isLoggedIn, points, completedCount, totalLevels, totalStars, characterCount = 0, charDailyBonus = 0, claimedToday = false }) {
+export default function RankingScreen({ player, isLoggedIn, points, completedCount, totalLevels, totalStars, characterCount = 0, charDailyBonus = 0, claimedToday = false, onOpenCollection }) {
   const myRowRef = useRef(null);
   const [liveBoard, setLiveBoard] = useState(null);
   const [loadError, setLoadError] = useState(false);
@@ -147,17 +147,31 @@ export default function RankingScreen({ player, isLoggedIn, points, completedCou
           </div>
           <strong className={isLoggedIn ? '' : 'off'}>+{isLoggedIn ? dividend.toLocaleString() : 0}</strong>
         </div>
-        <div className="income-row">
+        <div className={`income-row char-row ${characterCount ? (claimedToday ? 'claimed' : 'pending') : ''}`}>
           <img src="/characters/soil-doctor.webp" alt="" />
           <div className="income-text">
             <b>ตัวละครพิเศษ ({characterCount}/{CHARACTERS.length})</b>
-            <span>
-              {characterCount === 0
-                ? 'ซื้อตัวละครที่ร้านค้าเพื่อรับเหรียญทุกวัน'
-                : claimedToday ? 'วันนี้รับแล้ว ✓ — รับได้อีกพรุ่งนี้ที่คลังสะสม' : 'กดรับได้ที่หน้าคลังสะสม'}
-            </span>
+            {characterCount === 0 ? (
+              <span>ซื้อตัวละครที่ร้านค้าเพื่อรับเหรียญทุกวัน</span>
+            ) : claimedToday ? (
+              <span className="claimed-note">
+                <span className="claimed-pill">
+                  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  วันนี้รับแล้ว
+                </span>
+                · รับได้อีกพรุ่งนี้
+              </span>
+            ) : (
+              <span>โบนัสวันนี้ยังไม่ได้รับ!</span>
+            )}
           </div>
-          <strong className={characterCount ? '' : 'off'}>+{charDailyBonus.toLocaleString()}</strong>
+          {characterCount > 0 && !claimedToday && onOpenCollection ? (
+            <button type="button" className="income-claim-btn" onClick={onOpenCollection}>
+              <small>+{charDailyBonus.toLocaleString()}</small>ไปรับเลย
+            </button>
+          ) : (
+            <strong className={characterCount ? '' : 'off'}>+{charDailyBonus.toLocaleString()}</strong>
+          )}
         </div>
         <div className="income-total">
           <span>รวมต่อวัน</span>
