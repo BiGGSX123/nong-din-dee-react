@@ -2508,7 +2508,9 @@ button.reward-btn:not(:disabled):active { transform: translateY(3px); box-shadow
 .arena-tabs button.on { color: #5C3D0A; background: linear-gradient(180deg, #FFE68A, #F6C04A); box-shadow: 0 2px 0 #B97A16; }
 .arena-rule { position: relative; z-index: 1; margin: 0 0 6px; text-align: center; font-size: calc(11px * var(--text-scale)); color: rgba(255,255,255,0.8); }
 .podium-pts.stars .star-icon { width: 18px; height: 18px; }
-.podium-sub { margin-top: 3px; max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: calc(10px * var(--text-scale)); color: rgba(255,255,255,0.85); }
+.podium-sub { margin-top: 3px; max-width: 100%; display: flex; flex-direction: column; align-items: center; line-height: 1.3;
+  font-size: calc(10px * var(--text-scale)); color: rgba(255,255,255,0.85); }
+.podium-sub span { max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .rank-list-name { flex-direction: column; align-items: flex-start; gap: 0; }
 .rank-list-name-row { display: flex; align-items: center; gap: 6px; max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .rank-list-name small { font-size: calc(10.5px * var(--text-scale)); font-weight: 600; color: var(--soil-mid); }
@@ -2878,3 +2880,47 @@ button.reward-btn:not(:disabled):active { transform: translateY(3px); box-shadow
 /* the survival start button pulses like "เริ่มเลย!" (offset so the two don't beat in sync) */
 .surv-box .tf-start { animation-delay: 0.7s; }
 @media (prefers-reduced-motion: reduce) { .tf-hero .tf-start, .surv-box .tf-start { animation: none; } }
+
+/* adventure header: total adventure score chip */
+.map-rules li.map-score {
+  display: inline-flex; align-items: center; gap: 4px; padding: 1px 9px 1px 4px; font-weight: 800; color: #7A4B0B;
+  background: linear-gradient(180deg, #FFF3C0, #FFE08A); border-color: #E7B54A; box-shadow: 0 1px 0 #D9A13A;
+}
+.map-rules li.map-score img { width: 16px; height: 16px; object-fit: contain; }
+.map-rules li.map-score b { font-weight: 900; color: #B9700E; }
+
+/* ---------- ranking stages: coins vs. stars ---------- */
+.arena.arena-coins {
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 28%, rgba(255,246,200,0.55), transparent 70%),
+    linear-gradient(180deg, #F2A93B 0%, #DB8420 55%, #B5631A 100%);
+  box-shadow: 0 6px 0 #7E4310, 0 14px 26px rgba(120,60,10,0.35);
+}
+.arena.arena-coins .arena-rays { background: repeating-conic-gradient(from 0deg, rgba(255,240,170,0.28) 0deg 8deg, transparent 8deg 22deg); }
+.arena.arena-stars {
+  background:
+    radial-gradient(1.5px 1.5px at 12% 18%, #fff, transparent), radial-gradient(1px 1px at 30% 8%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 72% 14%, #fff, transparent), radial-gradient(1px 1px at 88% 34%, #fff, transparent),
+    radial-gradient(1px 1px at 56% 40%, rgba(255,255,255,0.8), transparent),
+    radial-gradient(ellipse 70% 50% at 50% 30%, rgba(170,140,255,0.35), transparent 70%),
+    linear-gradient(180deg, #2E2A7A 0%, #3B2B78 55%, #1D1A48 100%);
+  box-shadow: 0 6px 0 #120F33, 0 14px 26px rgba(25,20,70,0.45);
+}
+.arena.arena-stars .arena-rays { background: repeating-conic-gradient(from 0deg, rgba(200,180,255,0.16) 0deg 8deg, transparent 8deg 22deg); }
+.arena.arena-coins .arena-rule, .arena.arena-stars .arena-rule { color: rgba(255,255,255,0.92); text-shadow: 0 1px 2px rgba(0,0,0,0.25); }
+
+.falling-bits { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+.fall-bit {
+  position: absolute; top: -36px; left: var(--x); width: var(--s); height: var(--s); opacity: 0.8;
+  will-change: transform; animation: bitFall var(--t) linear var(--d) infinite;
+}
+.fall-bit img, .fall-bit .star-icon { display: block; width: 100%; height: 100%; object-fit: contain; }
+.falling-bits.coin .fall-bit img { filter: drop-shadow(0 2px 2px rgba(120,60,0,0.35)); }
+.falling-bits.star .fall-bit { opacity: 0.7; }
+@keyframes bitFall {
+  from { transform: translateY(0) rotate(0deg); }
+  to { transform: translateY(640px) rotate(calc(var(--r) * 360deg)); }
+}
+/* keep the content above the falling bits */
+.arena .arena-head, .arena .arena-tabs, .arena .arena-rule, .arena .podium { position: relative; z-index: 1; }
+@media (prefers-reduced-motion: reduce) { .falling-bits { display: none; } }

@@ -25,7 +25,7 @@ export default function CollectionScreen({ levels, levelStatus, characters = [],
     if (claiming) return;
     setClaiming(true);
     onClaimDaily()
-      .then((pts) => { playHarvestPass(); setClaimMsg(`ได้รับ +${pts} แต้ม!`); })
+      .then((pts) => { playHarvestPass(); setClaimMsg(`ได้รับ +${pts} เหรียญ!`); })
       .catch(() => setClaimMsg(null))
       .finally(() => setClaiming(false));
   }
@@ -56,19 +56,19 @@ export default function CollectionScreen({ levels, levelStatus, characters = [],
         </div>
         {characters.length === 0 ? (
           <div className="daily-body">
-            <b>แต้มประจำวันจากตัวละครพิเศษ</b>
-            <span>ซื้อตัวละครที่ร้านค้า แล้วกลับมารับแต้มที่นี่ได้ทุกวัน</span>
+            <b>เหรียญประจำวันจากตัวละครพิเศษ</b>
+            <span>ซื้อตัวละครที่ร้านค้า แล้วกลับมารับเหรียญที่นี่ได้ทุกวัน</span>
             <button type="button" className="daily-btn shop" onClick={onOpenShop}><img src="/icons/shop/shop.webp" alt="" />ไปร้านค้า</button>
           </div>
         ) : dailyPending <= 0 ? (
           <div className="daily-body">
-            <b>{claimMsg || 'รับแต้มประจำวันแล้ว ✓'}</b>
-            <span>กลับมารับ +{dailyTotal} แต้มได้อีกครั้งพรุ่งนี้</span>
+            <b>{claimMsg || 'รับเหรียญประจำวันแล้ว ✓'}</b>
+            <span>กลับมารับ +{dailyTotal} เหรียญได้อีกครั้งพรุ่งนี้</span>
           </div>
         ) : (
           <div className="daily-body">
-            <b>แต้มประจำวันพร้อมรับ!</b>
-            <span>จากตัวละครพิเศษ รวม <strong>+{dailyPending}</strong> แต้ม</span>
+            <b>เหรียญประจำวันพร้อมรับ!</b>
+            <span>จากตัวละครพิเศษ รวม <strong>+{dailyPending}</strong> เหรียญ</span>
             <button type="button" className="daily-btn" onClick={claim} disabled={claiming}>{claiming ? '...' : 'รับเลย!'}</button>
           </div>
         )}
@@ -88,7 +88,7 @@ export default function CollectionScreen({ levels, levelStatus, characters = [],
                 ? <div className="sticker char-sticker"><Sparkles img={c.img}><CharPortrait ch={c} size={84} variant="sticker" /></Sparkles></div>
                 : <div className="slot-hole"><CharPortrait ch={c} size={64} locked variant="sticker" /><span className="slot-q">?</span></div>}
               <div className="slot-name">{owned ? c.name : '???'}</div>
-              <div className="slot-sub">{owned ? `+${c.bonus} แต้ม/วัน` : 'ซื้อที่ร้านค้า'}</div>
+              <div className="slot-sub">{owned ? `+${c.bonus} เหรียญ/วัน` : 'ซื้อที่ร้านค้า'}</div>
             </div>
           );
         })}

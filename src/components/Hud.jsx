@@ -44,7 +44,7 @@ export default function Hud({ screen, currentProvince, rankTitle, points, quizSt
           className={`hud-profile-btn ${screen === 'profile' ? 'active' : ''}`}
           onClick={onOpenProfile}
           disabled={screen === 'quiz'}
-          aria-label="ข้อมูลส่วนตัวและประวัติแต้ม"
+          aria-label="ข้อมูลส่วนตัวและประวัติเหรียญ"
         >
           <img className="avatar" src={avatarSrc} alt="" />
           <span className="hud-profile-text">

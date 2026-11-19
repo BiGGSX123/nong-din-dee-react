@@ -114,10 +114,10 @@ export default function HarvestScreen({ level, levelNumber, pickedCropId, score,
         const prevBest = breakdown?.prevBest ?? null;
         return (
           <>
-            <div className={`points-earned ${gained === 0 ? 'zero' : ''}`}>+{gained}<span>แต้มสะสมที่ได้</span></div>
+            <div className={`points-earned ${gained === 0 ? 'zero' : ''}`}>+{gained}<span>เหรียญสะสมที่ได้</span></div>
             {prevBest != null && (gained > 0
-              ? <div className="best-note up">ทำลายสถิติเดิม <b>{prevBest}</b> → <b>{lastPoints}</b> ได้แต้มเพิ่ม +{gained}</div>
-              : <div className="best-note">ยังไม่เกินสถิติเดิม <b>{prevBest}</b> แต้ม <br/>ต้องทำคะแนนให้สูงกว่าสถิติถึงจะได้แต้มเพิ่ม</div>)}
+              ? <div className="best-note up">ทำลายสถิติเดิม <b>{prevBest}</b> → <b>{lastPoints}</b> ได้เหรียญเพิ่ม +{gained}</div>
+              : <div className="best-note">ยังไม่เกินสถิติเดิม <b>{prevBest}</b> เหรียญ <br/>ต้องทำคะแนนให้สูงกว่าสถิติถึงจะได้เหรียญเพิ่ม</div>)}
           </>
         );
       })()}

@@ -3,6 +3,7 @@ import { api } from '../lib/api';
 import StarIcon from '../components/StarIcon';
 import { CHARACTERS } from '../data/characters';
 import QuizLeaderboard from '../components/QuizLeaderboard';
+import FallingBits from '../components/FallingBits';
 
 const MEDAL_COLORS = ['#E8A93A', '#B0B0B0', '#C97B4A'];
 const DISPLAY_ORDER = [1, 0, 2]; // classic podium arrangement: 2nd, 1st, 3rd
@@ -49,7 +50,8 @@ export default function RankingScreen({ player, isLoggedIn, points, completedCou
       .then(({ players }) => {
         if (cancelled) return;
         setStarBoard(players.map((p) => ({
-          name: p.displayName, pts: p.points, stars: p.stars, mapScore: p.mapScore, avatar: p.pictureUrl, me: p.id === player.id,
+          // pts = total points earned (balance + spent), like the points ranking
+          name: p.displayName, pts: p.earned ?? p.points, stars: p.stars, mapScore: p.mapScore, avatar: p.pictureUrl, me: p.id === player.id,
         })));
       })
       .catch(() => { if (!cancelled) setLoadError(true); });
@@ -120,7 +122,7 @@ export default function RankingScreen({ player, isLoggedIn, points, completedCou
         <div className="hero-tiles">
           <div className="hero-tile">
             <img src="/icons/shop/points.webp" alt="" />
-            <div><b>{points.toLocaleString()}</b><span>แต้มสะสม</span></div>
+            <div><b>{points.toLocaleString()}</b><span>เหรียญสะสม</span></div>
           </div>
           <div className="hero-tile">
             <StarIcon filled />
@@ -141,7 +143,7 @@ export default function RankingScreen({ player, isLoggedIn, points, completedCou
           <img src="/icons/ui/gift.webp" alt="" />
           <div className="income-text">
             <b>ปันผลเที่ยงคืน</b>
-            <span>{isLoggedIn ? `1% ของแต้มสะสม ${points.toLocaleString()} แต้ม` : 'เข้าสู่ระบบด้วย LINE เพื่อรับปันผลทุกคืน'}</span>
+            <span>{isLoggedIn ? `1% ของเหรียญสะสม ${points.toLocaleString()} เหรียญ` : 'เข้าสู่ระบบด้วย LINE เพื่อรับปันผลทุกคืน'}</span>
           </div>
           <strong className={isLoggedIn ? '' : 'off'}>+{isLoggedIn ? dividend.toLocaleString() : 0}</strong>
         </div>
@@ -151,7 +153,7 @@ export default function RankingScreen({ player, isLoggedIn, points, completedCou
             <b>ตัวละครพิเศษ ({characterCount}/{CHARACTERS.length})</b>
             <span>
               {characterCount === 0
-                ? 'ซื้อตัวละครที่ร้านค้าเพื่อรับแต้มทุกวัน'
+                ? 'ซื้อตัวละครที่ร้านค้าเพื่อรับเหรียญทุกวัน'
                 : claimedToday ? 'วันนี้รับแล้ว ✓ — รับได้อีกพรุ่งนี้ที่คลังสะสม' : 'กดรับได้ที่หน้าคลังสะสม'}
             </span>
           </div>
@@ -159,7 +161,7 @@ export default function RankingScreen({ player, isLoggedIn, points, completedCou
         </div>
         <div className="income-total">
           <span>รวมต่อวัน</span>
-          <b><img src="/icons/shop/points.webp" alt="" />+{dailyTotal.toLocaleString()} แต้ม</b>
+          <b><img src="/icons/shop/points.webp" alt="" />+{dailyTotal.toLocaleString()} เหรียญ</b>
         </div>
       </section>
 
@@ -182,23 +184,26 @@ export default function RankingScreen({ player, isLoggedIn, points, completedCou
       {board && (
         <>
           {/* the arena: night-sky stage with spinning light rays + 3D podium */}
-          <section className="arena">
+          {/* each ranking gets its own stage: gold with falling coins (เหรียญ),
+              night sky with falling stars (ดวงดาว) */}
+          <section className={`arena ${isStars ? 'arena-stars' : 'arena-coins'}`}>
             <div className="arena-rays" aria-hidden="true" />
+            <FallingBits key={tab} kind={isStars ? 'star' : 'coin'} />
             <div className="arena-head">
               <h3><img src="/icons/ui/trophy.webp" alt="" />จัดอันดับผู้เล่น</h3>
               {myRank > 0 && <span className="arena-me">อันดับของคุณ <b>#{myRank}</b> / {board.length}</span>}
             </div>
             <div className="arena-tabs" role="tablist" aria-label="ประเภทอันดับ">
               <button type="button" role="tab" aria-selected={!isStars} className={!isStars ? 'on' : ''} onClick={() => setTab('points')}>
-                <img src="/icons/shop/points.webp" alt="" />อันดับแต้ม
+                <img src="/icons/shop/points.webp" alt="" />อันดับเหรียญ
               </button>
               <button type="button" role="tab" aria-selected={isStars} className={isStars ? 'on' : ''} onClick={() => setTab('stars')}>
                 <StarIcon filled />อันดับดวงดาว
               </button>
             </div>
             <p className="arena-rule">{isStars
-              ? 'ดาวมากสุดก่อน · ดาวเท่ากันดูคะแนนรวมผจญภัย · ยังเท่ากันดูแต้ม'
-              : 'เรียงตามแต้มที่ได้รับทั้งหมด'}</p>
+              ? 'ดาวมากที่สุด · คะแนนรวมผจญภัย · เหรียญที่ได้รับ'
+              : 'เรียงตามเหรียญที่ได้รับทั้งหมด'}</p>
             <div className="podium">
               {DISPLAY_ORDER.filter((i) => podium[i]).map((i) => {
                 const p = podium[i];
@@ -216,7 +221,12 @@ export default function RankingScreen({ player, isLoggedIn, points, completedCou
                       </div>
                       <div className="podium-name"><span>{p.name}</span>{p.me && <span className="me-tag">คุณ</span>}</div>
                       <div className={`podium-pts ${isStars ? 'stars' : ''}`}>{metric(p)}</div>
-                      {isStars && <div className="podium-sub">{p.pts.toLocaleString()} แต้ม</div>}
+                      {isStars && (
+                        <div className="podium-sub">
+                          <span>{p.mapScore.toLocaleString()} คะแนนผจญภัย</span>
+                          <span>{p.pts.toLocaleString()} เหรียญ</span>
+                        </div>
+                      )}
                     </div>
                     <div className="podium-block" aria-hidden="true"><span className="podium-num">{rank}</span></div>
                   </div>
@@ -236,7 +246,7 @@ export default function RankingScreen({ player, isLoggedIn, points, completedCou
                     : <span className="rank-list-avatar placeholder">{p.name.charAt(0)}</span>}
                   <span className="rank-list-name">
                     <span className="rank-list-name-row">{p.name}{p.me && <span className="me-tag">คุณ</span>}</span>
-                    {isStars && <small>{p.pts.toLocaleString()} แต้ม</small>}
+                    {isStars && <small>{p.mapScore.toLocaleString()} คะแนนผจญภัย · {p.pts.toLocaleString()} เหรียญ</small>}
                   </span>
                   <span className={`rank-list-pts ${isStars ? 'stars' : ''}`}>{metric(p)}</span>
                 </div>

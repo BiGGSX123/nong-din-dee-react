@@ -99,7 +99,7 @@ export default function App() {
   }
   // shop items owned, e.g. { time: 2 } — server-backed when logged in
   const [inventory, setInventory] = useState({});
-  // a "แต้ม x2" item used during the current map level doubles its points
+  // a "เหรียญ x2" item used during the current map level doubles its points
   const levelBoostRef = useRef(false);
   // special characters owned + the last Bangkok date their daily bonus was claimed
   const [characters, setCharacters] = useState([]);

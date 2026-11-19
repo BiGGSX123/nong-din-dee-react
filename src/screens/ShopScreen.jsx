@@ -10,7 +10,7 @@ import { playUnlock, playWrong } from '../lib/sound';
 
 const MODE_LABEL = { map: 'ด่านผจญภัย', tf: 'ถูก หรือ ผิด' };
 
-// item shop: spend points (แต้มสะสม) on power-ups used during quizzes
+// item shop: spend points (เหรียญสะสม) on power-ups used during quizzes
 export default function ShopScreen({ points, inventory, onBuy, isLoggedIn, characters = [], onBuyCharacter }) {
   const [busy, setBusy] = useState(null); // itemId being bought
   const [flash, setFlash] = useState(null); // { id, ok, msg, n } after a purchase (n restarts the bounce)
@@ -54,10 +54,10 @@ export default function ShopScreen({ points, inventory, onBuy, isLoggedIn, chara
       <section className="shop-hero">
         <div className="shop-awning" aria-hidden="true" />
         <h1><img className="shop-title-icon" src="/icons/shop/shop.webp" alt="" />ร้านค้าน้องดินดี</h1>
-        <p>เอาแต้มสะสมมาแลกไอเทมช่วยตอบคำถาม</p>
+        <p>เอาเหรียญสะสมมาแลกไอเทมช่วยตอบคำถาม</p>
         <div className="shop-balance">
           <img src="/icons/shop/points.webp" alt="" />
-          <b>{points.toLocaleString()}</b><span>แต้มที่ใช้ได้</span>
+          <b>{points.toLocaleString()}</b><span>เหรียญที่ใช้ได้</span>
         </div>
       </section>
 
@@ -86,7 +86,7 @@ export default function ShopScreen({ points, inventory, onBuy, isLoggedIn, chara
                 onClick={() => buy(item)}
               >
                 <span className="shop-price"><img src="/icons/shop/points.webp" alt="" />{item.price}</span>
-                <span className="shop-buy-label">{busy === item.id ? '...' : affordable ? 'ซื้อ' : 'แต้มไม่พอ'}</span>
+                <span className="shop-buy-label">{busy === item.id ? '...' : affordable ? 'ซื้อ' : 'เหรียญไม่พอ'}</span>
               </button>
             </article>
           );
@@ -94,7 +94,7 @@ export default function ShopScreen({ points, inventory, onBuy, isLoggedIn, chara
       </div>
 
       <h2 className="shop-section">⭐ ตัวละครพิเศษ</h2>
-      <p className="shop-section-sub">ซื้อครั้งเดียวได้ถาวร — รับแต้มเพิ่มทุกวันที่หน้าคลังสะสม</p>
+      <p className="shop-section-sub">ซื้อครั้งเดียวได้ถาวร — รับเหรียญเพิ่มทุกวันที่หน้าคลังสะสม</p>
       <div className="char-shop-grid">
         {CHARACTERS.map((ch) => {
           const owned = characters.includes(ch.id);
@@ -104,7 +104,7 @@ export default function ShopScreen({ points, inventory, onBuy, isLoggedIn, chara
             <article className={`char-card ${owned ? 'owned' : ''} ${justBought && flash.ok ? 'bought' : ''}`} key={ch.id}>
               <Sparkles img={ch.img}><CharPortrait ch={ch} size={96} variant="sticker" /></Sparkles>
               <h3>{ch.name}</h3>
-              <div className="char-bonus">+{ch.bonus} แต้ม/วัน</div>
+              <div className="char-bonus">+{ch.bonus} เหรียญ/วัน</div>
               <p>{ch.desc}</p>
               {justBought && !flash.ok && <div className="shop-flash err">{flash.msg}</div>}
               {owned ? (
@@ -112,7 +112,7 @@ export default function ShopScreen({ points, inventory, onBuy, isLoggedIn, chara
               ) : (
                 <button type="button" className="shop-buy wide" disabled={!affordable || busy === ch.id} onClick={() => setConfirmChar(ch)}>
                   <span className="shop-price"><img src="/icons/shop/points.webp" alt="" />{ch.price}</span>
-                  <span className="shop-buy-label">{busy === ch.id ? '...' : affordable ? 'ซื้อ' : 'แต้มไม่พอ'}</span>
+                  <span className="shop-buy-label">{busy === ch.id ? '...' : affordable ? 'ซื้อ' : 'เหรียญไม่พอ'}</span>
                 </button>
               )}
             </article>
@@ -121,7 +121,7 @@ export default function ShopScreen({ points, inventory, onBuy, isLoggedIn, chara
       </div>
 
       <h2 className="shop-section"><img className="shop-section-icon" src="/icons/ui/gift.webp" alt="" />แลกของรางวัล</h2>
-      <p className="shop-section-sub">ใช้แต้มสะสมแลกของรางวัลจริง!</p>
+      <p className="shop-section-sub">ใช้เหรียญสะสมแลกของรางวัลจริง!</p>
       <div className="reward-grid">
         {REWARDS.map((r) => (
           <article className="reward-card" key={r.id}>
@@ -141,11 +141,11 @@ export default function ShopScreen({ points, inventory, onBuy, isLoggedIn, chara
           <div className="soldout-card confirm-card" role="alertdialog" aria-labelledby="confirm-title" onClick={(e) => e.stopPropagation()}>
             <div className="confirm-char"><Sparkles img={confirmChar.img}><CharPortrait ch={confirmChar} size={110} variant="sticker" /></Sparkles></div>
             <h2 id="confirm-title">ซื้อ {confirmChar.name} ไหม?</h2>
-            <div className="confirm-bonus">+{confirmChar.bonus} แต้ม/วัน ถาวร</div>
+            <div className="confirm-bonus">+{confirmChar.bonus} เหรียญ/วัน ถาวร</div>
             <div className="confirm-cost">
               <span>ใช้</span>
               <b><img src="/icons/shop/points.webp" alt="" />{confirmChar.price.toLocaleString()}</b>
-              <span>เหลือ {(points - confirmChar.price).toLocaleString()} แต้ม</span>
+              <span>เหลือ {(points - confirmChar.price).toLocaleString()} เหรียญ</span>
             </div>
             <div className="confirm-actions">
               <button type="button" className="btn secondary" onClick={() => setConfirmChar(null)}>ยกเลิก</button>
@@ -163,9 +163,9 @@ export default function ShopScreen({ points, inventory, onBuy, isLoggedIn, chara
               <div className="bonus-rays" aria-hidden="true" />
               <Sparkles img={welcome.ch.img}><CharPortrait ch={welcome.ch} size={124} variant="sticker" /></Sparkles>
             </div>
-            <h2 id="bonus-title">ได้รับแต้มทันที!</h2>
-            <div className="bonus-amount"><img src="/icons/shop/points.webp" alt="" />+{welcome.bonus}<span>แต้ม</span></div>
-            <p>โบนัสวันนี้จาก <b>{welcome.ch.name}</b><br />ตั้งแต่พรุ่งนี้กดรับ +{welcome.bonus} แต้มได้ทุกวันที่หน้าคลังสะสม</p>
+            <h2 id="bonus-title">ได้รับเหรียญทันที!</h2>
+            <div className="bonus-amount"><img src="/icons/shop/points.webp" alt="" />+{welcome.bonus}<span>เหรียญ</span></div>
+            <p>โบนัสวันนี้จาก <b>{welcome.ch.name}</b><br />ตั้งแต่พรุ่งนี้กดรับ +{welcome.bonus} เหรียญได้ทุกวันที่หน้าคลังสะสม</p>
             <button type="button" className="btn" onClick={() => setWelcome(null)}>เยี่ยมเลย!</button>
           </div>
         </div>,
@@ -183,7 +183,7 @@ export default function ShopScreen({ points, inventory, onBuy, isLoggedIn, chara
               <span className="soldout-stamp">สินค้าหมด</span>
             </div>
             <h2 id="soldout-title">ขออภัย สินค้าหมดชั่วคราว</h2>
-            <p><b>{soldOut.name}</b> หมดแล้ว กลับมาแลกใหม่เร็วๆ นี้นะ<br />ยังไม่มีการหักแต้มของคุณ</p>
+            <p><b>{soldOut.name}</b> หมดแล้ว กลับมาแลกใหม่เร็วๆ นี้นะ<br />ยังไม่มีการหักเหรียญของคุณ</p>
             <button type="button" className="btn" onClick={() => setSoldOut(null)}>ตกลง</button>
           </div>
         </div>,
@@ -191,7 +191,7 @@ export default function ShopScreen({ points, inventory, onBuy, isLoggedIn, chara
       )}
 
       <p className="shop-note">
-        แต้มที่ใช้ซื้อไอเทมจะถูกหักจากแต้มสะสม (อันดับจะลดลงตามแต้มที่ใช้)
+        เหรียญที่ใช้ซื้อจะถูกหักจากเหรียญคงเหลือ (อันดับไม่ลด เพราะนับจากเหรียญที่ได้รับทั้งหมด)
         {!isLoggedIn && ' — โหมดผู้เยี่ยมชม ไอเทมจะหายเมื่อปิดเกม เข้าสู่ระบบด้วย LINE เพื่อเก็บไว้'}
       </p>
     </>

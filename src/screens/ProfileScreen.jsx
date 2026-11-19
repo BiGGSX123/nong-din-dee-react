@@ -20,7 +20,7 @@ function describe(e, levels) {
   switch (e.kind) {
     case 'level': {
       const province = levels[Number(e.ref)]?.province || `ด่าน ${Number(e.ref) + 1}`;
-      return { icon: '/icons/ui/map.webp', title: e.amount >= 0 ? `ผ่านด่าน ${province}` : `ปรับแต้มด่าน ${province}` };
+      return { icon: '/icons/ui/map.webp', title: e.amount >= 0 ? `ผ่านด่าน ${province}` : `ปรับเหรียญด่าน ${province}` };
     }
     case 'quiz': {
       const [diff, x2] = String(e.ref || '').split(':');
@@ -44,7 +44,7 @@ function describe(e, levels) {
     case 'dividend':
       return { icon: '/icons/shop/points.webp', title: 'ปันผลรายวัน 1%' };
     default:
-      return { icon: '/icons/shop/points.webp', title: 'แต้ม' };
+      return { icon: '/icons/shop/points.webp', title: 'เหรียญ' };
   }
 }
 
@@ -140,11 +140,11 @@ export default function ProfileScreen({ player, isLoggedIn, points, levels, leve
         {joined && <div className="pf-joined">เริ่มผจญภัยเมื่อ {joined}</div>}
       </section>
 
-      <section className="pf-wallet" aria-label="แต้ม">
+      <section className="pf-wallet" aria-label="เหรียญ">
         <div className="pf-wallet-main">
           <img className="pf-wallet-coin" src="/icons/shop/points.webp" alt="" />
           <div>
-            <small>แต้มคงเหลือ</small>
+            <small>เหรียญคงเหลือ</small>
             <b>{fmt(points)}</b>
           </div>
         </div>
@@ -166,7 +166,7 @@ export default function ProfileScreen({ player, isLoggedIn, points, levels, leve
 
       <section className="pf-history">
         <div className="pf-history-head">
-          <h2><img src="/icons/shop/points.webp" alt="" />ประวัติแต้ม</h2>
+          <h2><img src="/icons/shop/points.webp" alt="" />ประวัติเหรียญ</h2>
           <div className="pf-filters" role="tablist" aria-label="กรองประวัติ">
             {FILTERS.map((f) => (
               <button key={f.id} type="button" role="tab" aria-selected={filter === f.id} className={filter === f.id ? 'on' : ''} onClick={() => setFilter(f.id)}>{f.label}</button>
@@ -184,7 +184,7 @@ export default function ProfileScreen({ player, isLoggedIn, points, levels, leve
         ) : groups.length === 0 ? (
           <div className="pf-empty">
             <img src="/mascot/nong-din-dee-thinking.webp" alt="" />
-            <p>{filter === 'all' ? 'ยังไม่มีประวัติแต้ม ไปเล่นด่านแรกกันเลย!' : filter === 'in' ? 'ยังไม่มีแต้มที่ได้รับ' : 'ยังไม่ได้ใช้แต้มเลย'}</p>
+            <p>{filter === 'all' ? 'ยังไม่มีประวัติเหรียญ ไปเล่นด่านแรกกันเลย!' : filter === 'in' ? 'ยังไม่มีเหรียญที่ได้รับ' : 'ยังไม่ได้ใช้เหรียญเลย'}</p>
             {filter === 'all' && <button type="button" className="btn" onClick={onGoPlay}>ไปผจญภัย</button>}
           </div>
         ) : (
@@ -215,7 +215,7 @@ export default function ProfileScreen({ player, isLoggedIn, points, levels, leve
 
         <p className="pf-note">
           {isLoggedIn
-            ? `แสดง ${HISTORY_LIMIT} รายการล่าสุด · แต้มที่ได้ก่อนเปิดระบบประวัติจะไม่แสดงในรายการ`
+            ? `แสดง ${HISTORY_LIMIT} รายการล่าสุด · เหรียญที่ได้ก่อนเปิดระบบประวัติจะไม่แสดงในรายการ`
             : 'โหมดผู้เยี่ยมชม ประวัติจะหายเมื่อปิดเกม เข้าสู่ระบบด้วย LINE เพื่อเก็บไว้'}
         </p>
       </section>

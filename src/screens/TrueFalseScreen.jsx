@@ -216,7 +216,7 @@ export default function TrueFalseScreen({ careMethods, fertilizers, onRoundFinis
           <span><i>📚</i>{level.hint}</span>
           <span><img className="tf-ico" src="/icons/shop/combo.webp" alt="" />คอมโบ</span>
         </div>
-        <p className="tf-points-note">ระดับ{level.label}: ข้อละ {level.timeMs / 1000} วินาที · ถูกข้อละ {level.perCorrect} แต้ม · ตอบถูกติดกันได้โบนัสคอมโบ — เล่นกี่รอบก็สะสมแต้มได้!</p>
+        <p className="tf-points-note">ระดับ{level.label}: ข้อละ {level.timeMs / 1000} วินาที · ถูกข้อละ {level.perCorrect} เหรียญ · ตอบถูกติดกันได้โบนัสคอมโบ — เล่นกี่รอบก็สะสมเหรียญได้!</p>
         <button className={`tf-start lv-${difficulty}`} type="button" onClick={() => start(difficulty)}>
           <img className="tf-start-icon" src={level.img} alt="" />เริ่มเลย! ระดับ{level.label}
         </button>
@@ -237,7 +237,7 @@ export default function TrueFalseScreen({ careMethods, fertilizers, onRoundFinis
         </div>
         <div className="tf-chips">
           <span><i>⏱️</i>ข้อละ {sv.timeMs / 1000} วิ</span>
-          <span><img className="tf-ico" src="/icons/shop/points.webp" alt="" />ถูกข้อละ {sv.perCorrect} แต้ม</span>
+          <span><img className="tf-ico" src="/icons/shop/points.webp" alt="" />ถูกข้อละ {sv.perCorrect} เหรียญ</span>
         </div>
         <div className="tf-record">
           <span className="tf-record-item"><img src="/icons/ui/trophy.webp" alt="" />รอดได้สูงสุด <b>{bests.survival}</b> ข้อ</span>
@@ -273,17 +273,17 @@ export default function TrueFalseScreen({ careMethods, fertilizers, onRoundFinis
               : <div className="tf-done-score"><b>{score}</b>/{questions.length}<span>ข้อที่ตอบถูก</span></div>}
           </div>
           <div className={`tf-earned ${earned === 'error' ? 'error' : ''}`}>
-            {earned === null && 'กำลังบันทึกแต้ม...'}
-            {typeof earned === 'number' && <><img src="/icons/shop/points.webp" alt="" />+{earned} แต้มสะสม</>}
+            {earned === null && 'กำลังบันทึกเหรียญ...'}
+            {typeof earned === 'number' && <><img src="/icons/shop/points.webp" alt="" />+{earned} เหรียญสะสม</>}
           </div>
           <div className="tf-earned-breakdown">
             {(() => {
               const r = roundPoints(results, mode);
               return level.noCombo
-                ? <>ถูก {score} ข้อ × {level.perCorrect} แต้ม{boostOn ? ' · ✨ x2' : ''}</>
-                : <>แต้มพื้นฐาน {r.base} + โบนัสคอมโบ {r.combo}{boostOn ? ' · ✨ x2' : ''}</>;
+                ? <>ถูก {score} ข้อ × {level.perCorrect} เหรียญ{boostOn ? ' · ✨ x2' : ''}</>
+                : <>เหรียญพื้นฐาน {r.base} + โบนัสคอมโบ {r.combo}{boostOn ? ' · ✨ x2' : ''}</>;
             })()}
-            {earned === 'error' && 'บันทึกแต้มไม่สำเร็จ ลองเล่นรอบใหม่อีกครั้งนะ'}
+            {earned === 'error' && 'บันทึกเหรียญไม่สำเร็จ ลองเล่นรอบใหม่อีกครั้งนะ'}
           </div>
           {!level.survival && <div className="tf-result-dots" aria-hidden="true">
             {results.map((ok, i) => <i key={i} className={ok ? 'ok' : 'miss'}>{ok ? '✓' : '✗'}</i>)}

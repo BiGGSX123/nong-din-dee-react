@@ -11,8 +11,8 @@ export const SHOP_ITEMS = [
     desc: 'ซ่อนตัวเลือกที่ผิดไปครึ่งหนึ่ง (ใช้ในด่านผจญภัย)',
   },
   {
-    id: 'double', icon: '✨', img: '/icons/shop/double.webp', name: 'แต้ม x2', price: 80, modes: ['map', 'tf'],
-    desc: 'แต้มของด่านหรือรอบถูก หรือ ผิด ที่กำลังเล่นคูณ 2',
+    id: 'double', icon: '✨', img: '/icons/shop/double.webp', name: 'เหรียญ x2', price: 80, modes: ['map', 'tf'],
+    desc: 'เหรียญของด่านหรือรอบถูก หรือ ผิด ที่กำลังเล่นคูณ 2',
   },
 ];
 

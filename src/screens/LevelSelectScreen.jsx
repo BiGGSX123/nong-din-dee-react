@@ -30,6 +30,9 @@ export default function LevelSelectScreen({ levels, levelStatus, playOrder, hasH
 
   const clearedCount = levelStatus.filter((s) => s.completed && s.stars > 0).length;
   const starCount = levelStatus.reduce((sum, s) => sum + (s.stars || 0), 0);
+  // adventure score = every level's best score added up (same as the star
+  // ranking's คะแนนผจญภัย on the server: sum of LevelProgress.points)
+  const adventureScore = levelStatus.reduce((sum, s) => sum + (s.points || 0), 0);
   // walking order: the player's home province first (if chosen), then the
   // rest — falls back to plain index order when no playOrder is given
   const order = playOrder ?? levels.map((_, i) => i);
@@ -119,6 +122,7 @@ export default function LevelSelectScreen({ levels, levelStatus, playOrder, hasH
             <ul className="map-rules">
               <li>ด่านละ 3 ข้อ</li>
               <li>ถูก 1 ข้อผ่านด่าน</li>
+              <li className="map-score"><img src="/icons/ui/trophy.webp" alt="" />คะแนนผจญภัย <b>{adventureScore.toLocaleString()}</b></li>
             </ul>
           </div>
         </div>
@@ -190,7 +194,7 @@ export default function LevelSelectScreen({ levels, levelStatus, playOrder, hasH
                 <span className={`prov-pill ${lvl.province.length >= 11 ? 'long' : ''}`}>
                   <span className="prov-name">{lvl.province}</span>
                   {st.completed && (
-                    <span className="prov-points" aria-label={`${st.points} แต้ม`}>
+                    <span className="prov-points" aria-label={`${st.points} เหรียญ`}>
                       <img src="/icons/shop/points.webp" alt="" />{st.points.toLocaleString()}
                     </span>
                   )}

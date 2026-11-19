@@ -26,7 +26,7 @@ export default function LoadingScreen({ onLogin, error, onRetry, retryLabel = '�
           </div>
         ) : onLogin ? (
           <div className="login-box">
-            <p>เข้าสู่ระบบเพื่อเก็บแต้ม อันดับ<br />และ แลกของรางวัลต่างๆ</p>
+            <p>เข้าสู่ระบบเพื่อเก็บเหรียญ อันดับ<br />และ แลกของรางวัลต่างๆ</p>
             <button
               type="button"
               className="line-login-btn"

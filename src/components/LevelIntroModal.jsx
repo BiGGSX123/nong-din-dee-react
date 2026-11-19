@@ -30,7 +30,7 @@ export default function LevelIntroModal({ level, levelNumber, soil, bestPoints, 
           {bestPoints > 0 && (
             <div className="level-intro-best">
               <img src="/icons/ui/trophy.webp" alt="" />
-              <span>สถิติเดิม <b>{bestPoints}</b> แต้ม <br/>ทำให้เกินสถิติถึงจะได้แต้มเพิ่ม</span>
+              <span>สถิติเดิม <b>{bestPoints}</b> เหรียญ <br/>ทำให้เกินสถิติถึงจะได้เหรียญเพิ่ม</span>
             </div>
           )}
           <button className="btn welcome-start" type="button" onClick={onStart}>เริ่มแก้ปัญหา</button>

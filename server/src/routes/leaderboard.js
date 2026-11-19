@@ -30,19 +30,22 @@ leaderboardRouter.get('/', async (req, res) => {
   res.json({ players: rows });
 });
 
-// GET /api/leaderboard/stars — "อันดับดวงดาว": most map stars first; ties go
-// to the higher total map score (sum of each level's best points), then to
-// the higher spendable points (Player.points, "เงิน")
+// GET /api/leaderboard/stars — "อันดับดวงดาว": most stars first; ties go to the
+// higher adventure score (sum of each level's best points), then to the higher
+// total points earned
 leaderboardRouter.get('/stars', async (req, res) => {
   const limit = Math.min(Number(req.query.limit) || 100, 500);
-  const [sums, players] = await Promise.all([
+  const [sums, players, spent] = await Promise.all([
     prisma.levelProgress.groupBy({ by: ['playerId'], _sum: { stars: true, points: true } }),
     prisma.player.findMany({ select: { id: true, displayName: true, pictureUrl: true, points: true } }),
+    spentByPlayer(),
   ]);
   const byId = new Map(sums.map((s) => [s.playerId, s._sum]));
+  // last tie-breaker = total points EARNED (balance + spent), same as the
+  // points ranking, so spending in the shop never costs a place
   const rows = players
-    .map((p) => ({ ...p, stars: byId.get(p.id)?.stars ?? 0, mapScore: byId.get(p.id)?.points ?? 0 }))
-    .sort((a, b) => b.stars - a.stars || b.mapScore - a.mapScore || b.points - a.points)
+    .map((p) => ({ ...p, stars: byId.get(p.id)?.stars ?? 0, mapScore: byId.get(p.id)?.points ?? 0, earned: p.points + (spent.get(p.id) ?? 0) }))
+    .sort((a, b) => b.stars - a.stars || b.mapScore - a.mapScore || b.earned - a.earned)
     .slice(0, limit);
   res.json({ players: rows });
 });
