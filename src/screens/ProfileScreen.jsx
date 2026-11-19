@@ -37,6 +37,10 @@ function describe(e, levels) {
     }
     case 'daily':
       return { icon: '/icons/ui/gift.webp', title: 'โบนัสตัวละครพิเศษประจำวัน' };
+    case 'char-bonus': {
+      const ch = characterById(e.ref);
+      return { icon: ch?.img || '/icons/ui/gift.webp', title: `โบนัสวันนี้ ${ch?.name || 'ตัวละครพิเศษ'} (ซื้อใหม่)`, round: true };
+    }
     case 'dividend':
       return { icon: '/icons/shop/points.webp', title: 'ปันผลรายวัน 1%' };
     default:

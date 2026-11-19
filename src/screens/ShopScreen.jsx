@@ -5,6 +5,7 @@ import FakeQR from '../components/FakeQR';
 import { SHOP_ITEMS } from '../data/shopItems';
 import { CHARACTERS } from '../data/characters';
 import CharPortrait from '../components/CharPortrait';
+import Sparkles from '../components/Sparkles';
 import { playUnlock, playWrong } from '../lib/sound';
 
 const MODE_LABEL = { map: 'ด่านแผนที่', tf: 'ถูก/ผิด' };
@@ -12,15 +13,16 @@ const MODE_LABEL = { map: 'ด่านแผนที่', tf: 'ถูก/ผ�
 // item shop: spend points (แต้มสะสม) on power-ups used during quizzes
 export default function ShopScreen({ points, inventory, onBuy, isLoggedIn, characters = [], onBuyCharacter }) {
   const [busy, setBusy] = useState(null); // itemId being bought
-  const [flash, setFlash] = useState(null); // { id, ok, msg } after a purchase
+  const [flash, setFlash] = useState(null); // { id, ok, msg, n } after a purchase (n restarts the bounce)
   const [soldOut, setSoldOut] = useState(null); // reward shown in the out-of-stock popup
   const [confirmChar, setConfirmChar] = useState(null); // character waiting for "ยืนยัน"
+  const [welcome, setWelcome] = useState(null); // { ch, bonus } — popup: the daily bonus paid with the purchase
 
-  // the "ได้ ... แล้ว!" highlight is a moment, not a state: fade it after a bit
-  // so the card doesn't stay looking selected
+  // a purchase is a moment, not a state: a successful item buy is just a quick
+  // bounce (no text), errors stay readable a little longer
   useEffect(() => {
     if (!flash) return undefined;
-    const t = setTimeout(() => setFlash(null), 2200);
+    const t = setTimeout(() => setFlash(null), flash.ok ? 900 : 2200);
     return () => clearTimeout(t);
   }, [flash]);
 
@@ -29,7 +31,11 @@ export default function ShopScreen({ points, inventory, onBuy, isLoggedIn, chara
     if (busy) return;
     setBusy(ch.id);
     onBuyCharacter(ch.id)
-      .then(() => { playUnlock(); setFlash({ id: ch.id, ok: true, msg: `${ch.name} มาอยู่ในคลังสะสมแล้ว!` }); })
+      .then((bonus) => {
+        playUnlock();
+        setFlash({ id: ch.id, ok: true, n: Date.now() });
+        if (bonus > 0) setWelcome({ ch, bonus });
+      })
       .catch(() => { playWrong(); setFlash({ id: ch.id, ok: false, msg: 'ซื้อไม่สำเร็จ ลองใหม่อีกครั้ง' }); })
       .finally(() => setBusy(null));
   }
@@ -38,7 +44,7 @@ export default function ShopScreen({ points, inventory, onBuy, isLoggedIn, chara
     if (busy) return;
     setBusy(item.id);
     onBuy(item.id)
-      .then(() => { playUnlock(); setFlash({ id: item.id, ok: true, msg: `ได้ ${item.name} แล้ว!` }); })
+      .then(() => { playUnlock(); setFlash({ id: item.id, ok: true, n: Date.now() }); })
       .catch(() => { playWrong(); setFlash({ id: item.id, ok: false, msg: 'ซื้อไม่สำเร็จ ลองใหม่อีกครั้ง' }); })
       .finally(() => setBusy(null));
   }
@@ -62,15 +68,16 @@ export default function ShopScreen({ points, inventory, onBuy, isLoggedIn, chara
           const justBought = flash?.id === item.id;
           return (
             <article className={`shop-item ${justBought && flash.ok ? 'bought' : ''}`} key={item.id}>
-              <div className={`shop-icon icon-${item.id}`} aria-hidden="true">{item.img ? <img src={item.img} alt="" /> : item.icon}</div>
+              {/* keyed by the purchase so buying again replays the bounce */}
+              <div key={justBought && flash.ok ? flash.n : 'icon'} className={`shop-icon icon-${item.id}`} aria-hidden="true">{item.img ? <img src={item.img} alt="" /> : item.icon}</div>
               <div className="shop-info">
                 <h2>{item.name}</h2>
                 <p>{item.desc}</p>
                 <div className="shop-meta">
                   {item.modes.map((m) => <span key={m} className="shop-mode">{MODE_LABEL[m]}</span>)}
-                  <span className="shop-owned">มีอยู่ {owned} ชิ้น</span>
+                  <span key={justBought && flash.ok ? flash.n : 'owned'} className="shop-owned">มีอยู่ {owned} ชิ้น</span>
                 </div>
-                {justBought && <div className={`shop-flash ${flash.ok ? 'ok' : 'err'}`}>{flash.msg}</div>}
+                {justBought && !flash.ok && <div className="shop-flash err">{flash.msg}</div>}
               </div>
               <button
                 type="button"
@@ -95,11 +102,11 @@ export default function ShopScreen({ points, inventory, onBuy, isLoggedIn, chara
           const justBought = flash?.id === ch.id;
           return (
             <article className={`char-card ${owned ? 'owned' : ''} ${justBought && flash.ok ? 'bought' : ''}`} key={ch.id}>
-              <CharPortrait ch={ch} size={96} variant="sticker" />
+              <Sparkles img={ch.img}><CharPortrait ch={ch} size={96} variant="sticker" /></Sparkles>
               <h3>{ch.name}</h3>
               <div className="char-bonus">+{ch.bonus} แต้ม/วัน</div>
               <p>{ch.desc}</p>
-              {justBought && <div className={`shop-flash ${flash.ok ? 'ok' : 'err'}`}>{flash.msg}</div>}
+              {justBought && !flash.ok && <div className="shop-flash err">{flash.msg}</div>}
               {owned ? (
                 <div className="char-owned">มีแล้ว ✓</div>
               ) : (
@@ -132,7 +139,7 @@ export default function ShopScreen({ points, inventory, onBuy, isLoggedIn, chara
       {confirmChar && createPortal(
         <div className="card-detail-overlay" onClick={() => setConfirmChar(null)}>
           <div className="soldout-card confirm-card" role="alertdialog" aria-labelledby="confirm-title" onClick={(e) => e.stopPropagation()}>
-            <div className="confirm-char"><CharPortrait ch={confirmChar} size={110} variant="sticker" /></div>
+            <div className="confirm-char"><Sparkles img={confirmChar.img}><CharPortrait ch={confirmChar} size={110} variant="sticker" /></Sparkles></div>
             <h2 id="confirm-title">ซื้อ {confirmChar.name} ไหม?</h2>
             <div className="confirm-bonus">+{confirmChar.bonus} แต้ม/วัน ถาวร</div>
             <div className="confirm-cost">
@@ -144,6 +151,22 @@ export default function ShopScreen({ points, inventory, onBuy, isLoggedIn, chara
               <button type="button" className="btn secondary" onClick={() => setConfirmChar(null)}>ยกเลิก</button>
               <button type="button" className="btn" onClick={() => buyChar(confirmChar)}>ยืนยันซื้อ</button>
             </div>
+          </div>
+        </div>,
+        document.body,
+      )}
+
+      {welcome && createPortal(
+        <div className="card-detail-overlay" onClick={() => setWelcome(null)}>
+          <div className="soldout-card bonus-card" role="dialog" aria-labelledby="bonus-title" onClick={(e) => e.stopPropagation()}>
+            <div className="bonus-hero">
+              <div className="bonus-rays" aria-hidden="true" />
+              <Sparkles img={welcome.ch.img}><CharPortrait ch={welcome.ch} size={124} variant="sticker" /></Sparkles>
+            </div>
+            <h2 id="bonus-title">ได้รับแต้มทันที!</h2>
+            <div className="bonus-amount"><img src="/icons/shop/points.webp" alt="" />+{welcome.bonus}<span>แต้ม</span></div>
+            <p>โบนัสวันนี้จาก <b>{welcome.ch.name}</b><br />ตั้งแต่พรุ่งนี้กดรับ +{welcome.bonus} แต้มได้ทุกวันที่หน้าคลังสะสม</p>
+            <button type="button" className="btn" onClick={() => setWelcome(null)}>เยี่ยมเลย!</button>
           </div>
         </div>,
         document.body,

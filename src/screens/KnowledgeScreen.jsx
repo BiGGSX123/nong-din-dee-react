@@ -68,7 +68,7 @@ export default function KnowledgeScreen({ careMethods, fertilizers }) {
                 </ul>
               </Field>
               <Field label="พืชที่เหมาะมาก">
-                {goodCrops.length ? <CropChips crops={goodCrops} /> : <span className="know-none">ไม่มีพืชในเกมที่เหมาะมาก</span>}
+                {goodCrops.length ? <CropChips crops={goodCrops} /> : <span className="know-none" style={{ marginLeft: '8px' }}>ไม่มีพืชในเกมที่เหมาะมาก</span>}
               </Field>
             </article>
           );

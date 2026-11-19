@@ -1,14 +1,22 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CROPS, SOIL } from '../data/content';
 import { CHARACTERS, dailyBonusOf } from '../data/characters';
 import CharPortrait from '../components/CharPortrait';
+import Sparkles from '../components/Sparkles';
 import { playHarvestPass } from '../lib/sound';
 
 // a hand-stuck look: each sticker gets its own small fixed tilt (stable per
 // slot, so it doesn't jiggle between renders)
 const tilt = (i) => `${((i * 37) % 9) - 4}deg`;
 
-export default function CollectionScreen({ levels, levelStatus, characters = [], claimedToday = false, onClaimDaily, onOpenShop }) {
+export default function CollectionScreen({ levels, levelStatus, characters = [], dailyPending = 0, newStickerIds = [], onStickersSeen, onClaimDaily, onOpenShop }) {
+  // stickers that are new on THIS visit: snapshot on open (they keep their
+  // NEW badge + pop-in while you look), then mark everything seen right away
+  // so the nav dot clears and next visit they're ordinary stickers
+  const [fresh] = useState(() => new Set(newStickerIds));
+  useEffect(() => { onStickersSeen?.(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  let popOrder = 0;
+  const freshProps = (id) => (fresh.has(id) ? { isNew: true, delay: popOrder++ * 0.12 } : {});
   const [claiming, setClaiming] = useState(false);
   const [claimMsg, setClaimMsg] = useState(null);
   const dailyTotal = dailyBonusOf(characters);
@@ -40,7 +48,7 @@ export default function CollectionScreen({ levels, levelStatus, characters = [],
         <div className="album-progress-bar"><i style={{ width: `${(found / total) * 100}%` }} /></div>
       </div>
 
-      <section className={`daily-card ${claimedToday ? 'done' : ''}`}>
+      <section className={`daily-card ${characters.length && dailyPending <= 0 ? 'done' : ''}`}>
         <div className="daily-chars" aria-hidden="true">
           {(characters.length ? CHARACTERS.filter((c) => characters.includes(c.id)) : CHARACTERS.slice(0, 3)).slice(0, 4).map((c) => (
             <CharPortrait key={c.id} ch={c} size={96} locked={!characters.length} variant="sticker" />
@@ -52,7 +60,7 @@ export default function CollectionScreen({ levels, levelStatus, characters = [],
             <span>ซื้อตัวละครที่ร้านค้า แล้วกลับมารับแต้มที่นี่ได้ทุกวัน</span>
             <button type="button" className="daily-btn shop" onClick={onOpenShop}><img src="/icons/shop/shop.webp" alt="" />ไปร้านค้า</button>
           </div>
-        ) : claimedToday ? (
+        ) : dailyPending <= 0 ? (
           <div className="daily-body">
             <b>{claimMsg || 'รับแต้มประจำวันแล้ว ✓'}</b>
             <span>กลับมารับ +{dailyTotal} แต้มได้อีกครั้งพรุ่งนี้</span>
@@ -60,19 +68,24 @@ export default function CollectionScreen({ levels, levelStatus, characters = [],
         ) : (
           <div className="daily-body">
             <b>แต้มประจำวันพร้อมรับ!</b>
-            <span>จากตัวละคร {characters.length} ตัว รวม <strong>+{dailyTotal}</strong> แต้ม</span>
+            <span>จากตัวละครพิเศษ รวม <strong>+{dailyPending}</strong> แต้ม</span>
             <button type="button" className="daily-btn" onClick={claim} disabled={claiming}>{claiming ? '...' : 'รับเลย!'}</button>
           </div>
         )}
       </section>
 
-      <AlbumPage title="ตัวละครพิเศษ" tape="purple" count={`${characters.length}/${CHARACTERS.length}`}>
+      <AlbumPage title="ตัวละครพิเศษ" tape="rainbow" count={`${characters.length}/${CHARACTERS.length}`}>
         {CHARACTERS.map((c, i) => {
           const owned = characters.includes(c.id);
           return (
-            <div className={`sticker-slot ${owned ? '' : 'empty'}`} key={c.id} style={owned ? { '--tilt': tilt(i + 5) } : undefined}>
+            <div
+              className={`sticker-slot ${owned ? '' : 'empty'} ${owned && fresh.has(`char:${c.id}`) ? 'is-new' : ''}`}
+              key={c.id}
+              style={owned ? { '--tilt': tilt(i + 5), '--pop-delay': `${freshProps(`char:${c.id}`).delay ?? 0}s` } : undefined}
+            >
+              {owned && fresh.has(`char:${c.id}`) && <span className="new-badge">NEW</span>}
               {owned
-                ? <div className="sticker char-sticker"><CharPortrait ch={c} size={84} variant="sticker" /></div>
+                ? <div className="sticker char-sticker"><Sparkles img={c.img}><CharPortrait ch={c} size={84} variant="sticker" /></Sparkles></div>
                 : <div className="slot-hole"><CharPortrait ch={c} size={64} locked variant="sticker" /><span className="slot-q">?</span></div>}
               <div className="slot-name">{owned ? c.name : '???'}</div>
               <div className="slot-sub">{owned ? `+${c.bonus} แต้ม/วัน` : 'ซื้อที่ร้านค้า'}</div>
@@ -83,13 +96,13 @@ export default function CollectionScreen({ levels, levelStatus, characters = [],
 
       <AlbumPage title="พืชที่เคยปลูก" tape="green" count={`${discoveredCropIds.size}/${CROPS.length}`}>
         {CROPS.map((c, i) => (
-          <StickerSlot key={c.id} img={c.img} name={c.nameTh} found={discoveredCropIds.has(c.id)} tilt={tilt(i)} />
+          <StickerSlot key={c.id} img={c.img} name={c.nameTh} found={discoveredCropIds.has(c.id)} tilt={tilt(i)} {...freshProps(`crop:${c.id}`)} />
         ))}
       </AlbumPage>
 
       <AlbumPage title="ชุดดินที่เคยเจอ" tape="orange" count={`${discoveredSoilIds.size}/${SOIL.length}`}>
         {SOIL.map((s, i) => (
-          <StickerSlot key={s.id} img={s.img} name={s.nameTh} found={discoveredSoilIds.has(s.id)} tilt={tilt(i + 3)} />
+          <StickerSlot key={s.id} img={s.img} name={s.nameTh} found={discoveredSoilIds.has(s.id)} tilt={tilt(i + 3)} {...freshProps(`soil:${s.id}`)} />
         ))}
       </AlbumPage>
     </>
@@ -105,7 +118,7 @@ function AlbumPage({ title, tape, count, children }) {
   );
 }
 
-function StickerSlot({ img, name, found, tilt: rot }) {
+function StickerSlot({ img, name, found, tilt: rot, isNew = false, delay = 0 }) {
   if (!found) {
     return (
       <div className="sticker-slot empty">
@@ -118,7 +131,8 @@ function StickerSlot({ img, name, found, tilt: rot }) {
     );
   }
   return (
-    <div className="sticker-slot" style={{ '--tilt': rot }}>
+    <div className={`sticker-slot ${isNew ? 'is-new' : ''}`} style={{ '--tilt': rot, '--pop-delay': `${delay}s` }}>
+      {isNew && <span className="new-badge">NEW</span>}
       <div className="sticker">
         <img src={img} alt="" />
       </div>

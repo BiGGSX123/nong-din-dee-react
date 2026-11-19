@@ -6,7 +6,9 @@ import { useEffect, useId, useMemo, useRef, useState } from 'react';
 // Keyboard: ↑/↓ move, Enter picks, Esc closes. Opens upward when there isn't
 // room below.
 //
-// options: array of strings, or { value, label } objects
+// options: array of strings, or { value, label, img? } objects — an option's
+// img shows in the list (and on the trigger when it's the selected one and
+// no `icon` prop is given)
 // onChange(value) is called with the picked option's value
 
 // Thai vowel/tone marks that combine with the previous letter — a highlight
@@ -116,7 +118,7 @@ export default function Dropdown({
         aria-label={ariaLabel}
         onClick={() => (open ? close() : openPanel())}
       >
-        {icon && <span className="dd-icon">{icon}</span>}
+        {(icon || selected?.img) && <span className="dd-icon">{icon || <img src={selected.img} alt="" />}</span>}
         <span className="dd-value">{selected ? selected.label : placeholder}</span>
         <span className="dd-chevron" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 9.5 L12 15.5 L18 9.5" fill="none" stroke="currentColor" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" /></svg></span>
       </button>
@@ -150,7 +152,7 @@ export default function Dropdown({
                 onPointerEnter={() => setActive(i)}
                 onClick={() => pick(o)}
               >
-                <span className="dd-dot" aria-hidden="true" />
+                {o.img ? <img className="dd-opt-img" src={o.img} alt="" /> : <span className="dd-dot" aria-hidden="true" />}
                 <span className="dd-label"><Highlight text={o.label} query={query} /></span>
                 {o.value === value && <span className="dd-check" aria-hidden="true">✓</span>}
               </li>

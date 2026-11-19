@@ -3,7 +3,7 @@ import { getVolume, setVolume } from '../lib/sound';
 
 const VOLUME_STEP = 0.2;
 
-export default function SettingsModal({ textSize, onChangeTextSize, onClose }) {
+export default function SettingsModal({ textSize, onChangeTextSize, isAdmin = false, onOpenAdmin, onClose }) {
   const [volume, setVolumeState] = useState(getVolume());
 
   function adjustVolume(delta) {
@@ -46,6 +46,18 @@ export default function SettingsModal({ textSize, onChangeTextSize, onClose }) {
             </button>
           </div>
         </div>
+
+        {/* admins only (Player.role === 'admin') — the admin page lives here, not in the bottom nav */}
+        {isAdmin && (
+          <button type="button" className="settings-admin-btn" onClick={onOpenAdmin}>
+            <img src="/icons/ui/gear.webp" alt="" />
+            <span>
+              <b>จัดการด่าน (แอดมิน)</b>
+              <small>แก้ด่าน ตัวเลือก และคำตอบที่ถูกต้อง</small>
+            </span>
+            <span className="settings-admin-go" aria-hidden="true">›</span>
+          </button>
+        )}
       </div>
     </div>
   );

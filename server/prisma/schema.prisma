@@ -20,6 +20,9 @@ model Player {
   // pays a daily bonus; charClaimDate = last Bangkok date it was claimed
   characters  Json            @default("[]")
   charClaimDate String?
+  // daily bonus points already claimed on charClaimDate — a character bought
+  // after today's claim can top up the difference the same day
+  charClaimedBonus Int        @default(0)
   // "player" | "admin" — replaces the old shared ADMIN_TOKEN gate; admin API
   // routes now check this on the logged-in session instead of a bearer secret
   role        String          @default("player")

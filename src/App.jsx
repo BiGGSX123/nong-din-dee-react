@@ -14,6 +14,7 @@ import NavBar from './components/NavBar';
 import IntroModal from './components/IntroModal';
 import LoadingScreen from './components/LoadingScreen';
 import { preloadCritical, preloadRest } from './lib/preload';
+import { collectedStickerIds, readSeen, writeSeen } from './lib/stickers';
 import LevelIntroModal from './components/LevelIntroModal';
 import { rankOf } from './lib/rank';
 import SettingsModal from './components/SettingsModal';
@@ -103,6 +104,7 @@ export default function App() {
   // special characters owned + the last Bangkok date their daily bonus was claimed
   const [characters, setCharacters] = useState([]);
   const [charClaimDate, setCharClaimDate] = useState(null);
+  const [charClaimedBonus, setCharClaimedBonus] = useState(0); // daily bonus already claimed on charClaimDate
   const [currentLevelIdx, setCurrentLevelIdx] = useState(null);
   const [quizStep, setQuizStep] = useState(0);
   const [quizCorrectCount, setQuizCorrectCount] = useState(0);
@@ -153,13 +155,19 @@ export default function App() {
   // one is a legitimate effect: it's reacting to an async login result, an
   // external event, not deriving a value that was already computable at render
   const hydratedRef = useRef(false);
+  // true once levelStatus reflects the player's real progress (server data for
+  // LINE players, the fresh in-memory state for guests) — the sticker "seen"
+  // baseline must not be taken from the pre-hydration defaults
+  const [progressReady, setProgressReady] = useState(false);
   useEffect(() => {
     if (hydratedRef.current || !isLoggedIn || !levels || !serverProgress) return;
     hydratedRef.current = true;
+    setProgressReady(true);
     setPoints(player.points);
     setInventory(player.items || {});
     setCharacters(Array.isArray(player.characters) ? player.characters : []);
     setCharClaimDate(player.charClaimDate || null);
+    setCharClaimedBonus(player.charClaimedBonus || 0);
     setLevelStatus(levels.map((lvl, i) => {
       const p = serverProgress.find((sp) => sp.levelIndex === i);
       return p
@@ -178,6 +186,34 @@ export default function App() {
     const isFirstTime = !isLoggedIn || player?.homeLevelIndex == null;
     setOnboardingStep(isFirstTime ? 'welcome' : null);
   }, [sessionLoading, isLoggedIn, player]);
+
+  // collection stickers: owned vs. already seen in the album (lib/stickers.js)
+  const stickerOwner = player?.id || null;
+  const collectedIds = collectedStickerIds(levels, levelStatus, characters);
+  const [seenStickers, setSeenStickers] = useState(null);
+  useEffect(() => {
+    if (isLoggedIn || !levels || sessionLoading) return;
+    setProgressReady(true); // guests: in-memory progress is ready as soon as the levels are
+  }, [isLoggedIn, levels, sessionLoading]);
+  useEffect(() => {
+    if (!progressReady) return;
+    const seen = readSeen(stickerOwner);
+    if (seen) { setSeenStickers(seen); return; }
+    // first time on this device/account: everything already owned counts as
+    // seen (no wall of NEW badges after an update) — only later finds are new
+    const baseline = new Set(collectedStickerIds(levels, levelStatus, characters));
+    writeSeen(stickerOwner, baseline);
+    setSeenStickers(baseline);
+    // baseline is taken once per owner, when progress first becomes real
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [progressReady, stickerOwner]);
+  const newStickerIds = seenStickers ? collectedIds.filter((id) => !seenStickers.has(id)) : [];
+  function markStickersSeen() {
+    if (!newStickerIds.length) return;
+    const next = new Set([...(seenStickers || []), ...collectedIds]);
+    writeSeen(stickerOwner, next);
+    setSeenStickers(next);
+  }
 
   // asset preloading (lib/preload.js): first-screen art starts downloading
   // now, while the loading screen waits for LINE + game data anyway; the rest
@@ -206,10 +242,17 @@ export default function App() {
   // LINE login is required once configured — no playable guest fallback on
   // failure, so a broken login shows this instead of silently entering the game
   const completedCount = levelStatus.filter((s) => s.completed && s.stars > 0).length; // passed = at least 1 star
+  // character daily bonus still claimable today (characters bought today were
+  // paid at purchase, so they don't count again)
+  const charClaimedToday = charClaimDate === bangkokToday();
+  const dailyPending = Math.max(0, dailyBonusOf(characters) - (charClaimedToday ? (charClaimedBonus || dailyBonusOf(characters)) : 0));
   // the admin tab stays hidden from regular players — it only appears for a
   // logged-in account with role === 'admin' (server enforces this too on every
   // write, so this is UI convenience, not the real gate)
-  const navTabs = NAV_TABS.filter((t) => t.id !== 'admin' || isAdmin);
+  // the admin page isn't a bottom-nav tab — admins open it from ตั้งค่า
+  const navTabs = NAV_TABS
+    .filter((t) => t.id !== 'admin')
+    .map((t) => (t.id === 'collection' && newStickerIds.length ? { ...t, badge: true } : t));
   const showNav = NAV_TABS.some((t) => t.id === screen) || screen === 'shop' || screen === 'profile';
 
   function startLevel(idx) {
@@ -354,32 +397,51 @@ export default function App() {
   function handleBuyCharacter(charId) {
     const ch = characterById(charId);
     if (!ch || characters.includes(charId) || points < ch.price) return Promise.reject(new Error('cannot buy'));
+    // the new character's daily bonus is paid right away and counted as claimed
+    // today (mirrors /api/characters/buy). Resolves to that bonus (shop popup).
     if (!isLoggedIn) {
-      setPoints((p) => p - ch.price);
+      const today = bangkokToday();
+      const claimedBefore = charClaimDate === today ? (charClaimedBonus || dailyBonusOf(characters)) : 0;
+      setPoints((p) => p - ch.price + ch.bonus);
       addGuestLog(-ch.price, 'character', charId);
+      addGuestLog(ch.bonus, 'char-bonus', charId);
       setCharacters((list) => [...list, charId]);
-      return Promise.resolve();
+      setCharClaimDate(today);
+      setCharClaimedBonus(claimedBefore + ch.bonus);
+      return Promise.resolve(ch.bonus);
     }
-    return buyCharacter(charId).then((res) => { setPoints(res.points); setCharacters(res.characters); });
+    return buyCharacter(charId).then((res) => {
+      setPoints(res.points);
+      setCharacters(res.characters);
+      if (res.claimDate) setCharClaimDate(res.claimDate);
+      if (typeof res.claimedBonus === 'number') setCharClaimedBonus(res.claimedBonus);
+      return res.bonus ?? 0;
+    });
   }
 
-  // once-a-day bonus from every owned character; resolves to the points added
+  // daily bonus from every owned character, once per Bangkok day; characters
+  // bought today were already paid at purchase, so only the unclaimed part is
+  // given (mirrors /api/characters/claim). Resolves to the points added.
   function handleClaimDaily() {
     const today = bangkokToday();
-    if (charClaimDate === today) return Promise.reject(new Error('already claimed'));
+    const total = dailyBonusOf(characters);
+    const claimedToday = charClaimDate === today;
+    const pending = total - (claimedToday ? (charClaimedBonus || total) : 0);
+    if (pending <= 0) return Promise.reject(new Error('already claimed'));
     if (!isLoggedIn) {
-      const bonus = dailyBonusOf(characters);
-      setPoints((p) => p + bonus);
-      addGuestLog(bonus, 'daily');
+      setPoints((p) => p + pending);
+      addGuestLog(pending, 'daily');
       setCharClaimDate(today);
-      return Promise.resolve(bonus);
+      setCharClaimedBonus(total);
+      return Promise.resolve(pending);
     }
     return claimDailyBonus().then((res) => {
       setPoints(res.points);
       setCharClaimDate(res.claimDate);
+      setCharClaimedBonus(res.claimedBonus ?? total);
       return res.awarded;
     }).catch((e) => {
-      if (e.status === 409) setCharClaimDate(today); // claimed on another device
+      if (e.status === 409) { setCharClaimDate(today); setCharClaimedBonus(total); } // claimed on another device
       throw e;
     });
   }
@@ -582,9 +644,9 @@ export default function App() {
       />
     );
   } else if (screen === 'ranking') {
-    content = <RankingScreen player={player} isLoggedIn={isLoggedIn} points={points} completedCount={completedCount} totalLevels={levels.length} totalStars={levelStatus.reduce((sum, st) => sum + (st.stars || 0), 0)} characterCount={characters.length} charDailyBonus={dailyBonusOf(characters)} claimedToday={charClaimDate === bangkokToday()} />;
+    content = <RankingScreen player={player} isLoggedIn={isLoggedIn} points={points} completedCount={completedCount} totalLevels={levels.length} totalStars={levelStatus.reduce((sum, st) => sum + (st.stars || 0), 0)} characterCount={characters.length} charDailyBonus={dailyBonusOf(characters)} claimedToday={dailyPending === 0} />;
   } else if (screen === 'collection') {
-    content = <CollectionScreen levels={levels} levelStatus={levelStatus} characters={characters} claimedToday={charClaimDate === bangkokToday()} onClaimDaily={handleClaimDaily} onOpenShop={() => setScreen('shop')} />;
+    content = <CollectionScreen levels={levels} levelStatus={levelStatus} characters={characters} dailyPending={dailyPending} newStickerIds={newStickerIds} onStickersSeen={markStickersSeen} onClaimDaily={handleClaimDaily} onOpenShop={() => setScreen('shop')} />;
   } else if (screen === 'knowledge') {
     content = <KnowledgeScreen careMethods={careMethods} fertilizers={fertilizers} />;
   } else if (screen === 'true-false') {
@@ -664,6 +726,8 @@ export default function App() {
         <SettingsModal
           textSize={textSize}
           onChangeTextSize={handleChangeTextSize}
+          isAdmin={isAdmin}
+          onOpenAdmin={() => { setShowSettings(false); setScreen('admin'); }}
           onClose={() => setShowSettings(false)}
         />
       )}
