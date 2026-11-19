@@ -178,7 +178,7 @@ export default function TrueFalseScreen({ careMethods, fertilizers, onRoundFinis
       {showHelp && <IntroModal mode={showHelp} onNext={() => setShowHelp(null)} />}
       <section className={`tf-hero lv-${difficulty}`}>
         <div className="tf-rays" aria-hidden="true" />
-        <button className="tf-info-btn" type="button" onClick={() => setShowHelp('tf')} aria-label="วิธีเล่น ถูก/ผิด">i</button>
+        <button className="tf-info-btn" type="button" onClick={() => setShowHelp('tf')} aria-label="วิธีเล่น ถูก หรือ ผิด">i</button>
         <h1 className="tf-logo">
           <span className="yes">ถูก</span><small>หรือ</small><span className="no">ผิด?</span>
         </h1>

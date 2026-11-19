@@ -174,7 +174,7 @@ export default function QuizScreen({ level, levelNumber, soil, step, pickedCropI
     <section className="tf-show quiz-show">
       <div className="tf-spot" aria-hidden="true" />
       <div className="quiz-header">
-        <button className="quiz-back-btn" type="button" onClick={onBack} aria-label="กลับแผนที่ด่าน">‹</button>
+        <button className="quiz-back-btn" type="button" onClick={onBack} aria-label="กลับหน้าผจญภัย">‹</button>
         <h1>ด่านที่ {levelNumber} · {level.province}</h1>
         {boostOn && <span className="boost-badge">✨ x2</span>}
       </div>

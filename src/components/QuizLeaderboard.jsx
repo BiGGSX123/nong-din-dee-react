@@ -91,7 +91,7 @@ export default function QuizLeaderboard({ playerId, refreshKey }) {
         </ol>
       )}
       {!loading && !result.error && rows.length > 0 && myIdx < 0 && (
-        <div className="quiz-board-hint">คุณยังไม่มีสถิติใน{lv.survival ? 'โหมด' : 'ระดับ'}{lv.label} — ไปเล่นถูก/ผิดเพื่อติดอันดับ!</div>
+        <div className="quiz-board-hint">คุณยังไม่มีสถิติใน{lv.survival ? 'โหมด' : 'ระดับ'}{lv.label} — ไปเล่นถูก หรือ ผิด เพื่อติดอันดับ!</div>
       )}
     </section>
   );

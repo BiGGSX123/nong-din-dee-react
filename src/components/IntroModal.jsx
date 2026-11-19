@@ -34,7 +34,7 @@ const PAGES = [
     title: 'วิธีเล่น',
     mascot: '/mascot/nong-din-dee-point.webp',
     steps: [
-      { key: 'tap', icon: icon('/icons/ui/pin.webp'), text: <>แตะที่<b>ด่าน</b>บนแผนที่เพื่อเริ่มเล่น</> },
+      { key: 'tap', icon: icon('/icons/ui/pin.webp'), text: <>แตะที่<b>ด่าน</b>ในหน้าผจญภัยเพื่อเริ่มเล่น</> },
       { key: 'star', icon: <StarIcon filled />, text: <>ตอบคำถาม 3 ข้อ ยิ่งถูกเยอะ ยิ่งได้<b>ดาว</b>เยอะ</> },
       { key: 'book', icon: icon('/icons/ui/book.webp'), text: <>อยากรู้เรื่องดิน พืช ปุ๋ย แตะแท็บ<b>ความรู้</b>ด้านล่าง</> },
     ],
@@ -59,7 +59,7 @@ const tfMini = <span className="tf-mini" aria-hidden="true"><b>✓</b><b>✗</b>
 const TF_PAGES = [
   {
     key: 'tf-howto',
-    title: 'วิธีเล่น ถูก/ผิด',
+    title: 'วิธีเล่น ถูก หรือ ผิด',
     mascot: '/mascot/nong-din-dee-thinking.webp',
     steps: [
       { key: 'read', icon: tfMini, text: <>อ่านข้อความเรื่องดิน พืช ปุ๋ย แล้วตอบว่า<b>ถูก</b>หรือ<b>ผิด</b></> },
@@ -99,7 +99,7 @@ const TF_PAGES = [
 const MAP_PAGES = [
   {
     key: 'map-howto',
-    title: 'วิธีเล่น แผนที่',
+    title: 'วิธีเล่น ผจญภัย',
     mascot: '/mascot/nong-din-dee-point.webp',
     steps: [
       { key: 'tap', icon: icon('/icons/ui/pin.webp'), text: <>แตะด่านที่มีธง<b>เล่นเลย!</b> เริ่มจากจังหวัดของคุณ</> },

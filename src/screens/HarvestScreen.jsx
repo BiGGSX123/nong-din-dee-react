@@ -123,7 +123,7 @@ export default function HarvestScreen({ level, levelNumber, pickedCropId, score,
       })()}
       {!nextLocked && <button className="btn" type="button" onClick={onNext}>ด่านถัดไป</button>}
       <button className={nextLocked ? 'btn' : 'btn secondary'} type="button" onClick={onPlayAgain}>เล่นอีกครั้ง</button>
-      <button className="btn secondary" type="button" onClick={onBackToMap}>กลับแผนที่ด่าน</button>
+      <button className="btn secondary" type="button" onClick={onBackToMap}>กลับหน้าผจญภัย</button>
     </>
   );
 }

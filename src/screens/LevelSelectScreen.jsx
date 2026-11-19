@@ -111,11 +111,11 @@ export default function LevelSelectScreen({ levels, levelStatus, playOrder, hasH
     <>
       {showHelp && <IntroModal mode="map" onNext={() => setShowHelp(false)} />}
       <div className="map-header" ref={ledeRef}>
-        <button className="tf-info-btn map-info-btn" type="button" onClick={() => setShowHelp(true)} aria-label="วิธีเล่นแผนที่">i</button>
+        <button className="tf-info-btn map-info-btn" type="button" onClick={() => setShowHelp(true)} aria-label="วิธีเล่นโหมดผจญภัย">i</button>
         <div className="map-title-row">
           <span className="map-badge"><img src="/icons/ui/map.webp" alt="" /></span>
           <div className="map-title-text">
-            <h1>แผนที่ <em>{levels.length}</em> จังหวัด</h1>
+            <h1>ผจญภัย <em>{levels.length}</em> จังหวัด</h1>
             <ul className="map-rules">
               <li>ด่านละ 3 ข้อ</li>
               <li>ถูก 1 ข้อผ่านด่าน</li>

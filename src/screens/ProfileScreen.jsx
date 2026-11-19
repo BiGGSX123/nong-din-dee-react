@@ -25,7 +25,7 @@ function describe(e, levels) {
     case 'quiz': {
       const [diff, x2] = String(e.ref || '').split(':');
       const lv = TF_LEVELS[diff];
-      return { icon: lv?.img || '/icons/shop/combo.webp', title: `ถูก/ผิด · ${lv?.label || 'รอบเล่น'}`, tag: x2 ? 'x2' : null };
+      return { icon: lv?.img || '/icons/shop/combo.webp', title: `ถูก หรือ ผิด · ${lv?.label || 'รอบเล่น'}`, tag: x2 ? 'x2' : null };
     }
     case 'shop': {
       const item = itemById(e.ref);
@@ -185,7 +185,7 @@ export default function ProfileScreen({ player, isLoggedIn, points, levels, leve
           <div className="pf-empty">
             <img src="/mascot/nong-din-dee-thinking.webp" alt="" />
             <p>{filter === 'all' ? 'ยังไม่มีประวัติแต้ม ไปเล่นด่านแรกกันเลย!' : filter === 'in' ? 'ยังไม่มีแต้มที่ได้รับ' : 'ยังไม่ได้ใช้แต้มเลย'}</p>
-            {filter === 'all' && <button type="button" className="btn" onClick={onGoPlay}>ไปที่แผนที่</button>}
+            {filter === 'all' && <button type="button" className="btn" onClick={onGoPlay}>ไปผจญภัย</button>}
           </div>
         ) : (
           groups.map((g) => (

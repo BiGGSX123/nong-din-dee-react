@@ -9,7 +9,7 @@ export default function LevelIntroModal({ level, levelNumber, soil, bestPoints, 
   return createPortal(
     <div className="intro-overlay" onClick={onCancel}>
       <div className="intro-card welcome-card level-intro" role="dialog" aria-labelledby="level-intro-title" onClick={(e) => e.stopPropagation()}>
-        <button className="welcome-close" type="button" onClick={onCancel} aria-label="กลับแผนที่">✕</button>
+        <button className="welcome-close" type="button" onClick={onCancel} aria-label="กลับหน้าผจญภัย">✕</button>
         <div className="welcome-hero" aria-hidden="true">
           <div className="welcome-rays" />
           <img className="level-intro-soil" src={soil.img} alt="" />
@@ -34,7 +34,7 @@ export default function LevelIntroModal({ level, levelNumber, soil, bestPoints, 
             </div>
           )}
           <button className="btn welcome-start" type="button" onClick={onStart}>เริ่มแก้ปัญหา</button>
-          <button className="welcome-back" type="button" onClick={onCancel}>‹ กลับแผนที่</button>
+          <button className="welcome-back" type="button" onClick={onCancel}>‹ กลับหน้าผจญภัย</button>
         </div>
       </div>
     </div>,

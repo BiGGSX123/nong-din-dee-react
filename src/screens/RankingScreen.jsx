@@ -197,8 +197,8 @@ export default function RankingScreen({ player, isLoggedIn, points, completedCou
               </button>
             </div>
             <p className="arena-rule">{isStars
-              ? 'ดาวมากสุดก่อน · ดาวเท่ากันดูคะแนนรวมแผนที่ · ยังเท่ากันดูแต้ม'
-              : 'เรียงตามแต้มที่ได้รับทั้งหมด (ไม่หักแต้มที่ใช้ไป)'}</p>
+              ? 'ดาวมากสุดก่อน · ดาวเท่ากันดูคะแนนรวมผจญภัย · ยังเท่ากันดูแต้ม'
+              : 'เรียงตามแต้มที่ได้รับทั้งหมด'}</p>
             <div className="podium">
               {DISPLAY_ORDER.filter((i) => podium[i]).map((i) => {
                 const p = podium[i];
@@ -246,7 +246,7 @@ export default function RankingScreen({ player, isLoggedIn, points, completedCou
         </>
       )}
 
-      {/* separate board for the ถูก/ผิด mode */}
+      {/* separate board for the ถูก หรือ ผิด mode */}
       {isLoggedIn && player && <QuizLeaderboard playerId={player.id} refreshKey={points} />}
     </>
   );

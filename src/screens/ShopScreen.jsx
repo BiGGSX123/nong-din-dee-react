@@ -8,7 +8,7 @@ import CharPortrait from '../components/CharPortrait';
 import Sparkles from '../components/Sparkles';
 import { playUnlock, playWrong } from '../lib/sound';
 
-const MODE_LABEL = { map: 'ด่านแผนที่', tf: 'ถูก/ผิด' };
+const MODE_LABEL = { map: 'ด่านผจญภัย', tf: 'ถูก หรือ ผิด' };
 
 // item shop: spend points (แต้มสะสม) on power-ups used during quizzes
 export default function ShopScreen({ points, inventory, onBuy, isLoggedIn, characters = [], onBuyCharacter }) {

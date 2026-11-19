@@ -8,11 +8,11 @@ export const SHOP_ITEMS = [
   },
   {
     id: 'fifty', icon: '💡', img: '/icons/shop/fifty.webp', name: 'ตัดตัวเลือกผิด', price: 40, modes: ['map'],
-    desc: 'ซ่อนตัวเลือกที่ผิดไปครึ่งหนึ่ง (ใช้ในด่านแผนที่)',
+    desc: 'ซ่อนตัวเลือกที่ผิดไปครึ่งหนึ่ง (ใช้ในด่านผจญภัย)',
   },
   {
     id: 'double', icon: '✨', img: '/icons/shop/double.webp', name: 'แต้ม x2', price: 80, modes: ['map', 'tf'],
-    desc: 'แต้มของด่านหรือรอบถูก/ผิดที่กำลังเล่นคูณ 2',
+    desc: 'แต้มของด่านหรือรอบถูก หรือ ผิด ที่กำลังเล่นคูณ 2',
   },
 ];
 
